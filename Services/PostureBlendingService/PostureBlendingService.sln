@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostureBlendingService", "PostureBlendingService\PostureBlendingService.csproj", "{246FD168-A69D-4276-9384-A722F2F95B3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMICSharp-Core", "..\..\Core\MMICSharp-Core\MMICSharp-Core.csproj", "{DE1D9A38-8343-4F73-A411-40B14D5271CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{246FD168-A69D-4276-9384-A722F2F95B3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{246FD168-A69D-4276-9384-A722F2F95B3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{246FD168-A69D-4276-9384-A722F2F95B3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{246FD168-A69D-4276-9384-A722F2F95B3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C6471067-AB60-45A9-9202-016E208CEA92}
+	EndGlobalSection
+EndGlobal

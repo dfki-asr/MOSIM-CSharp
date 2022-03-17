@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMICSharp-Core", "MMICSharp-Core.csproj", "{18BBE40F-BF74-4434-98EB-1881E0E41B1A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18BBE40F-BF74-4434-98EB-1881E0E41B1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18BBE40F-BF74-4434-98EB-1881E0E41B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18BBE40F-BF74-4434-98EB-1881E0E41B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18BBE40F-BF74-4434-98EB-1881E0E41B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC834D45-EBF8-49F2-8792-282F56838F62}
+	EndGlobalSection
+EndGlobal

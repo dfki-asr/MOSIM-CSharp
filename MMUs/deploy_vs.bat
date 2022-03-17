@@ -40,6 +40,13 @@ if not defined MSBUILD (
 )
 
 SET mode=Debug
+SET VERBOSE=0
+
+if "%~1"=="-v" (
+	echo Using Verbose mode 
+	SET VERBOSE=1
+	SHIFT
+)
 
 if "%~1"=="" (
   REM no parameter provided, assuming debug mode. 
@@ -61,14 +68,18 @@ md build
 
 if EXIST deploy.log DEL deploy.log 
 
->deploy.log (
+if %VERBOSE%==1 (
 	REM Build the Visual Studio Project
-	"%MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode% -flp:logfile=build.log
+	"%MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode%
+) else (
+	>deploy.log (
+		REM Build the Visual Studio Project
+		"%MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode% -flp:logfile=build.log
+	)
 )
 if %ERRORLEVEL% EQU 0 (
-
-	>>deploy.log (
-	REM If the build was sucessfull, copy all files to the respective build folders. 
+	if %VERBOSE%==1 (
+	  REM If the build was sucessfull, copy all files to the respective build folders. 
 	  FOR /D %%G in (*) DO (
 		if NOT "%%G"==".vs" (
 		  if EXIST "%%G"\bin (
@@ -79,6 +90,20 @@ if %ERRORLEVEL% EQU 0 (
 		  )
 		)
 	  )
+	) else (
+		>>deploy.log (
+		REM If the build was sucessfull, copy all files to the respective build folders. 
+		  FOR /D %%G in (*) DO (
+			if NOT "%%G"==".vs" (
+			  if EXIST "%%G"\bin (
+				if EXIST "%%G"\bin\%mode% (
+				  md .\build\%%G
+				  cmd /c xcopy /S/Y/Q .\%%G\bin\%mode%\* .\build\%%G
+				)
+			  )
+			)
+		  )
+		)
 	)
   ECHO [92mSuccessfully deployed CS MMUs[0m
   exit /b 0

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMIAdapterCSharp", "MMIAdapterCSharp\MMIAdapterCSharp.csproj", "{CFA6F706-B783-423E-A1B2-B96EDC20A475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMICSharp-Core", "..\MMICSharp-Core\MMICSharp-Core.csproj", "{DE1D9A38-8343-4F73-A411-40B14D5271CB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFA6F706-B783-423E-A1B2-B96EDC20A475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFA6F706-B783-423E-A1B2-B96EDC20A475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFA6F706-B783-423E-A1B2-B96EDC20A475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFA6F706-B783-423E-A1B2-B96EDC20A475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BAD2D0D2-303C-4B35-85FD-1D4E2CE56FBD}
+	EndGlobalSection
+EndGlobal

@@ -15,12 +15,15 @@ ECHO " ------------------------------------------ "
 ECHO.
 
 SET VERBOSE=0
+SET COREDEPL_B=0
 
 call :CheckEnv
 
 call :argparse %*
 
 goto :eof
+
+
 
 REM Method Section
 
@@ -126,26 +129,34 @@ exit /b 0
 	echo Folder Not Found
 exit /b 0
 
+:DeployCore
+	call :MSBUILD "%REPO%\Core\MMICSharp-Core\MMICSharp-Core.sln"
+	SET COREDEPL_B=1
+exit /b 0
+
 ::DeployAdapter
 :DeployAdapter
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Core\Adapter\Adapter.sln" MMIAdapterCSharp\bin Adapters\CSharpAdapter\
 exit /b 0
 
 ::DeployCoSimulator
 :DeployCoSimulator 
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Core\CoSimulator\MMICoSimulator.sln" CoSimulationStandalone\bin Services\CoSimulationStandalone\
 exit /b 0
 
 ::DeployLauncher
 :DeployLauncher
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Core\Launcher\MMILauncher.sln" MMILauncher\bin Launcher\
 	COPY "%REPO%\Deployment\defaultSettings.json" "%BUILDENV%\Launcher\settings.json"
-
 exit /b 0
 
 ::DeployMMUs 
 :DeployMMUs 
 echo Deploy MMUs
+	if %COREDEPL_B%==0 call :DeployCore
 	call :DeployMethod %REPO%\MMUs MMUs\ build
 	
 	RMDIR /s/q %BUILDENV%\\MMUs\\CarryMMU
@@ -228,9 +239,11 @@ exit /b
 	cd %dirname%
 	
 	if %VERBOSE%==1 (
+		"%MOSIM_MSBUILD%" %filename% -t:restore -p:RestorePackagesConfig=true
 		"%MOSIM_MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
 	) else (
 		>deploy.log (
+			"%MOSIM_MSBUILD%" %filename% -t:restore -p:RestorePackagesConfig=true
 			"%MOSIM_MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
 		)
 	)

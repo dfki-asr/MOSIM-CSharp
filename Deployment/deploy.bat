@@ -6,46 +6,19 @@ REM Original author(s): Janis Sprenger, Bhuvaneshwaran Ilanthirayan, Klaus Fisch
 
 REM This is a deploy script to auto-generate the components of the MOSIM-CSharp projects and move them to a new environment folder. 
 
+ECHO " ------------------------------------------ " 
+ECHO "       _   __ ___                  _        "
+ECHO " |\/| / \ (_   |  |\/|     __     /  -|-|-  "
+ECHO " |  | \_/ __) _|_ |  |            \_ -|-|-  "
+ECHO "                                            "                                          
+ECHO " ------------------------------------------ " 
+ECHO.
+
 SET VERBOSE=0
 
+call :CheckEnv
+
 call :argparse %*
-
-goto :eof
-
-REM call :safeCall deploy_variables.bat "There has been an error when setting the deploy vaiables!"
-
-REM if not exist %BUILDENV% (
-REM   md %BUILDENV%
-REM )
-
-REM COPY Scripts\enableFirewall.exe .\build\
-
-REM echo Removing doublicated MMUs
-pause
-REM call .\remove_double_mmus.bat
-
-echo Removing doublicated MMUs done.
-
-REM the link currently does not yet work. 
-REM RD build\
-REM 
-REM call ..\Scripts\link.vbs StartFramework.lnk Environment\Launcher\MMILauncher.exe
-REM CD ..\
-
-ECHO  __  __  ___  ____ ___ __  __ 
-ECHO ^|  \/  ^|/ _ \/ ___^|_ _^|  \/  ^|
-ECHO ^| ^|\/^| ^| ^| ^| \___ \^| ^|^| ^|\/^| ^|
-ECHO ^| ^|  ^| ^| ^|_^| ^|___) ^| ^|^| ^|  ^| ^|
-ECHO ^|_^|  ^|_^|\___/^|____/___^|_^|  ^|_^|
-ECHO.   
-
-ECHO [92mSuccessfully deployed the Framework to %cd%/build/Environment.   [0m
-ECHO If this is the first time, the framework was deployed, consider utilizing the script %cd%\build\enableFirewall.exe to setup all firewall exceptions. 
-ECHO [92mTo start the framework[0m, start the launcher at %cd%\build\Environment\Launcher\MMILauncher.exe To use the framework, please open the Unity Demo-Scene at %cd%\Demos\Unity or any other MOSIM-enabled Project.
-
-REM explorer.exe %cd%\build
-
-pause
 
 goto :eof
 
@@ -69,6 +42,8 @@ REM Method Section
 		call :DisplayUsage
 		exit /b 0
 	)
+	
+	FOR /F %%i IN ("%1") DO SET "MOSIM_HOME=%%~fi"
 	
 	if not exist %1 (
 		call :FolderNotFound
@@ -164,7 +139,7 @@ exit /b 0
 ::DeployLauncher
 :DeployLauncher
 	call :MSBUILD "%REPO%\Core\Launcher\MMILauncher.sln" MMILauncher\bin Launcher\
-	COPY "%REPO%\Scripts\defaultSettings.json" "%BUILDENV%\Launcher\settings.json"
+	COPY "%REPO%\Deployment\defaultSettings.json" "%BUILDENV%\Launcher\settings.json"
 
 exit /b 0
 
@@ -172,6 +147,14 @@ exit /b 0
 :DeployMMUs 
 echo Deploy MMUs
 	call :DeployMethod %REPO%\MMUs MMUs\ build
+	
+	RMDIR /s/q %BUILDENV%\\MMUs\\CarryMMU
+	RMDIR /s/q %BUILDENV%\\MMUs\\CarryMMUNested
+	RMDIR /s/q %BUILDENV%\\MMUs\\CarryMMUSimple
+	RMDIR /s/q %BUILDENV%\\MMUs\\MoveMMU
+	RMDIR /s/q %BUILDENV%\\MMUs\\MoveMMUSimple
+	RMDIR /s/q %BUILDENV%\\MMUs\\ReachMMU
+	RMDIR /s/q %BUILDENV%\\MMUs\\ReleaseMMU
 exit /b 0
 	
 ::DeploySkeletonAccess
@@ -204,75 +187,6 @@ exit /b 0
 	call :DeployPostureBlendingService
 	call :DeployCoordinateSystemMapper
 exit /b 0
-
-::DeployCore
-:DeployCore
-	call :MSBUILD "Core\Framework\LanguageSupport\cs\MMICSharp.sln" MMIAdapterCSharp\bin Adapters\CSharpAdapter\
-	call :MSBUILD "Core\Launcher\MMILauncher.sln" MMILauncher\bin Launcher\
-	call :MSBUILD "Core\CoSimulation\MMICoSimulation.sln" CoSimulationStandalone\bin Services\CoSimulationStandalone\
-	
-	if not exist %LIBRARYPATH% (
-		md %LIBRARYPATH%
-	)
-	>>deploy.log (
-		cmd /c xcopy /S/Y/Q .\Core\Framework\LanguageSupport\cs\MMICSharp\bin\Debug\MMICSharp.dll %LIBRARYPATH%
-		cmd /c xcopy /S/Y/Q .\Core\Framework\LanguageSupport\cs\MMICSharp\bin\Debug\MMIStandard.dll %LIBRARYPATH%
-		cmd /c xcopy /S/Y/Q .\Core\Framework\LanguageSupport\cs\MMICSharp\bin\Debug\MMICSharp.dll %LIBRARYPATH%
-		cmd /c xcopy /S/Y/Q .\Core\CoSimulation\MMICoSimulation\bin\Debug\MMICoSimulation.dll %LIBRARYPATH%
-		
-		cmd /c xcopy /S/Y/Q .\Core\Framework\LanguageSupport\python\ %PYTHON%\ /EXCLUDE:.\Core\Framework\LanguageSupport\python\libraries_exclude.txt
-
-	)
-exit /b
-
-
-:DeployUnity
-    cd .\Core
-    call .\distribute_unity.bat
-    cd %MOSIM_HOME%
-    if %ERRORLEVEL% NEQ 0 call :halt %ERRORLEVEL%
-
-	call :DeployMethod Core\Framework\EngineSupport\Unity Adapters\UnityAdapter\ MMIAdapterUnity\UnityProject\build
-	
-	REM Copy core artifacts to services:
-    REM Copy MMIUnity artifacts to UnityPathPlanning
-    cmd /c xcopy /S/Y/Q .\Core\Framework\EngineSupport\Unity\MMIUnity\build\* .\Services\UnityPathPlanning\UnityPathPlanningService\Assets\Plugins\
-    if %ERRORLEVEL% NEQ 0 call :halt %ERRORLEVEL%
-
-    REM Copy MMIUnityTarget engine to UnityDemo
-    cmd /c xcopy /S/Y/Q .\Core\Framework\EngineSupport\Unity\MMIUnity.TargetEngine\MMIUnity.TargetEngine\build\* .\Demos\Unity\Assets\MMI\Plugins\
-    if %ERRORLEVEL% NEQ 0 call :halt %ERRORLEVEL%
-
-	REM Copy core artifacts to Tools
-	REM Copy MMIUnity to SkeletonTesting
-	cmd /c xcopy /S/Y/Q .\Core\Framework\EngineSupport\Unity\MMIUnity\build .\Tools\SkeletonTesting\Assets\Plugins\
-    if %ERRORLEVEL% NEQ 0 call :halt %ERRORLEVEL%
-	
-	call :DeployMethod Core\BasicMMus\CS-Unity-MMUs MMUs\ build
-
-	cmd /c xcopy /S/Y/Q .\Core\Framework\EngineSupport\Unity\MMIUnity.TargetEngine\MMIUnity.TargetEngine\build\* %LIBRARYPATH%
-		
-	cmd /c xcopy /S/Y/Q .\Core\Framework\EngineSupport\Unity\MMIUnity.TargetEngine\MMIUnity.TargetEngine\build\* .\Tools\SkeletonConfigurator\SkeletonConfigurator\Assets\MMI\Plugins\
-
-exit /b
-
-:DeployServices
-	if exist Services\MMICSharp (
-		RD /S/Q Services\MMICSharp
-	)
-    MD Services\MMICSharp
-    cmd /c xcopy /S/Y/Q .\Core\Framework\LanguageSupport\cs\MMICSharp\bin\debug\*.dll Services\MMICSharp
-    if %ERRORLEVEL% NEQ 0 call :halt %ERRORLEVEL%
-	
-	call :DeployMethod Services\BlenderIK Services\BlenderIK build
-	call :MSBUILD "Services\CoordinateSystemMapper\CoordinateSystemMapper.sln" CoordinateSystemMapper\bin Services\CoordinateSystemMapper\
-	call :MSBUILD "Services\PostureBlendingService\PostureBlendingService.sln" PostureBlendingService\bin Services\PostureBlendingService\
-	call :MSBUILD "Services\RetargetingService\RetargetingService.sln" RetargetingService\bin Services\RetargetingService\
-	call :DeployMethod Services\UnityPathPlanning Services\UnityPathPlanning UnityPathPlanningService\build
-	
-	call :MSBUILD "Services\SkeletonAccessService\SkeletonAccessService.sln" SkeletonAccessService\bin Services\SkeletonAccessService
-exit /b
-
 
 ::DeployMethod 
 ::  %1 path to component
@@ -314,10 +228,10 @@ exit /b
 	cd %dirname%
 	
 	if %VERBOSE%==1 (
-		"%MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
+		"%MOSIM_MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
 	) else (
 		>deploy.log (
-			"%MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
+			"%MOSIM_MSBUILD%" %filename% -t:Build -p:Configuration=%mode% -flp:logfile=build.log
 		)
 	)
 	REM If the build was sucessfull, copy all files to the respective build folders. 
@@ -378,6 +292,22 @@ if %ERRORLEVEL% NEQ 0 (
 	exit /b
 )
 
+::Check Environment Variables
+:CheckEnv
+	IF NOT "%MOSIM_MSBUILD%"=="" (
+		IF NOT EXIST "%MOSIM_MSBUILD%" (
+			ECHO Please update your environment variable MOSIM_MSBUILD to point to Visual Studio MSBUILD.
+			ECHO example: setx MOSIM_MSBUILD "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+			call :halt 1
+		)
+	) ELSE (
+		ECHO Compilation requires Visual Studio. Please setup the variable MOSIM_MSBUILD to point to Visual Studio MSBUILD.
+		ECHO example: setx MOSIM_MSBUILD "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+		call :halt 1
+	)
+exit /b 0
+
+
 :: Sets the errorlevel and stops the batch immediately
 :halt
 call :__SetErrorLevel %1
@@ -393,6 +323,6 @@ goto :eof
 exit /b %time:~-2%
 goto :eof
 
-REM ErrorExit should not be called, just goto'ed. It assumes, that the ERRORLEVEL variable was set before to the appropriate value. 
-REM exit /b %ERRORLEVEL%
+
+
 REM Nothing should folow after this. 

@@ -12,27 +12,14 @@ ECHO _______________________________________________________
 ECHO.
 
 
-REM Checking environment variables
-if not defined DEVENV (
-  ECHO [31mDEVENV Environment variable pointing to the Visual Studio 2017 devenv.exe is missing.[0m
-  ECHO    e.g. "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.com"
-  pause
-  exit /b 1
-) else (
-  if not exist "%DEVENV%" (
-    ECHO    DEVENV: [31mMISSING[0m at "%DEVENV%"
-    ECHO [31mPlease update the deploy_variables.bat script with a valid path![0m
-	exit /b 2
-  )
-)
-if not defined MSBUILD (
+if not defined MOSIM_MSBUILD (
   ECHO [31mMSBUILD Environment variable pointing to the Visual Studio 2017 MSBuild.exe is missing.[0m
   ECHO    e.g. "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
   pause
   exit /b 1
 ) else (
-  if not exist "%MSBUILD%" (
-    ECHO    MSBUILD: [31mMISSING[0m at "%MSBUILD%"
+  if not exist "%MOSIM_MSBUILD%" (
+    ECHO    MSBUILD: [31mMISSING[0m at "%MOSIM_MSBUILD%"
     ECHO [31mPlease update the deploy_variables.bat script with a valid path![0m
 	exit /b 2
     )
@@ -70,11 +57,11 @@ if EXIST deploy.log DEL deploy.log
 
 if %VERBOSE%==1 (
 	REM Build the Visual Studio Project
-	"%MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode%
+	"%MOSIM_MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode%
 ) else (
 	>deploy.log (
 		REM Build the Visual Studio Project
-		"%MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode% -flp:logfile=build.log
+		"%MOSIM_MSBUILD%" .\CS.sln -t:Build -p:Configuration=%mode% -flp:logfile=build.log
 	)
 )
 if %ERRORLEVEL% EQU 0 (

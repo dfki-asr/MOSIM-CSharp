@@ -170,20 +170,24 @@ exit /b 0
 	
 ::DeploySkeletonAccess
 :DeploySkeletonAccess
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Services\SkeletonAccessService\SkeletonAccessService.sln" SkeletonAccessService\bin Services\SkeletonAccessService
 exit /b 0
 
 ::DeployRetargetingService
 :DeployRetargetingService
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Services\RetargetingService\RetargetingService.sln" RetargetingService\bin Services\RetargetingService\
 exit /b 0
 
 ::DeployPostureBlendingService
 :DeployPostureBlendingService
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Services\PostureBlendingService\PostureBlendingService.sln" PostureBlendingService\bin Services\PostureBlendingService\
 exit /b 0
 
 :DeployCoordinateSystemMapper
+	if %COREDEPL_B%==0 call :DeployCore
 	call :MSBUILD "%REPO%\Services\CoordinateSystemMapper\CoordinateSystemMapper.sln" CoordinateSystemMapper\bin Services\CoordinateSystemMapper\
 exit /b 0
 

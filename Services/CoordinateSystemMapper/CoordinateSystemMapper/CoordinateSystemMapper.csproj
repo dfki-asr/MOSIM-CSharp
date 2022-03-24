@@ -52,14 +52,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MMICSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MMICSharp\MMICSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="MMIStandard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\MMICSharp\MMIStandard.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -75,9 +67,6 @@
     <Reference Include="Thrift, Version=0.11.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Core\Libraries\Thrift.dll</HintPath>
-    </Reference>
-    <Reference Include="Utf8Json">
-      <HintPath>..\..\MMICSharp\Utf8Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

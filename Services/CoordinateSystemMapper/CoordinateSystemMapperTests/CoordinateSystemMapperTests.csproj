@@ -43,12 +43,6 @@
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <Private>False</Private>
     </Reference>
-    <Reference Include="MMICSharp">
-      <HintPath>..\..\MMICSharp\MMICSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="MMIStandard">
-      <HintPath>..\..\MMICSharp\MMIStandard.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -60,6 +54,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Core\MMICSharp-Core\MMICSharp-Core.csproj">
+      <Project>{de1d9a38-8343-4f73-a411-40b14d5271cb}</Project>
+      <Name>MMICSharp-Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CoordinateSystemMapper\CoordinateSystemMapper.csproj">
       <Project>{544ea2f5-3d7d-42b6-87ac-2cac81e31679}</Project>
       <Name>CoordinateSystemMapper</Name>

@@ -1,10 +1,13 @@
 @echo off
+@setlocal enabledelayedexpansion
 
 REM SPDX-License-Identifier: MIT
 REM The content of this file has been developed in the context of the MOSIM research project.
 REM Original author(s): Janis Sprenger, Bhuvaneshwaran Ilanthirayan, Klaus Fischer
 
 REM This is a deploy script to auto-generate the components of the MOSIM-CSharp projects and move them to a new environment folder. 
+call :CheckPowershell PARENT
+
 
 ECHO " ------------------------------------------ " 
 ECHO "       _   __ ___                  _        "
@@ -29,10 +32,6 @@ REM Method Section
 
 :: argparse
 :argparse
-	if [%1]==[] (
-		call :DisplayUsage
-		exit /b 0
-	)
 	if "%1"=="-h" (
 		call :DisplayUsage
 		exit /b 0
@@ -46,22 +45,38 @@ REM Method Section
 		exit /b 0
 	)
 	
-	FOR /F %%i IN ("%1") DO SET "MOSIM_HOME=%%~fi"
-	
-	if not exist %1 (
-		call :FolderNotFound
-		exit /b 1
-	) else (
-		FOR /F %%i IN ("%1") DO SET "MOSIM_HOME=%%~fi"
-		
-		echo Deploying to: %MOSIM_HOME%
-		SET BUILDENV=%MOSIM_HOME%\Environment
-		SET LIBRARYPATH=%MOSIM_HOME%\Libraries
-		SET REPO=%~dp0\..\
-		
+	SET REPO=%~dp0..\
 
-		SHIFT
+	IF "%1"=="" (
+		ECHO Taking default MOSIM Target Path "%MOSIM_TARGET_PATH%"
+		SET "MOSIM_HOME=%MOSIM_TARGET_PATH%"
+	) ELSE (
+		SET "var=%1"
+		IF "!var:~0,1!"=="-" (
+			ECHO Taking default MOSIM Target Path "%MOSIM_TARGET_PATH%"
+			SET "MOSIM_HOME=%MOSIM_TARGET_PATH%"
+		) ELSE (
+			FOR /F %%i IN ("%1") DO SET "MOSIM_HOME=%%~fi"	
+			ECHO Taking provided MOSIM Target Path at "!MOSIM_HOME!"
+			SHIFT
+		)
 	)
+	
+
+	
+	if "%MOSIM_HOME%"=="" (
+		ECHO Please provide a target directory 
+		ECHO     - either as a parameter to this script or 
+		ECHO     - adjust the Deployment\DefaultVariables.bat in the meta repository and run Deployment\Initialize.bat
+		ECHO     - or use SETX MOSIM_TARGET_PATH C:\Path\To\My\Target to set the variable manually. 
+		call :halt 1
+	)
+	
+	
+	echo Deploying to: %MOSIM_HOME%
+	SET BUILDENV=%MOSIM_HOME%\Environment
+	SET LIBRARYPATH=%MOSIM_HOME%\Libraries
+	
 	
 	if "%1"=="-v" (
 		ECHO Running in Verbose mode
@@ -130,14 +145,14 @@ exit /b 0
 exit /b 0
 
 :DeployCore
-	call :MSBUILD "%REPO%\Core\MMICSharp-Core\MMICSharp-Core.sln"
+	call :MSBUILD "!REPO!\Core\MMICSharp-Core\MMICSharp-Core.sln"
 	SET COREDEPL_B=1
 exit /b 0
 
 ::DeployAdapter
 :DeployAdapter
 	if %COREDEPL_B%==0 call :DeployCore
-	call :MSBUILD "%REPO%\Core\Adapter\Adapter.sln" MMIAdapterCSharp\bin Adapters\CSharpAdapter\
+	call :MSBUILD "!REPO!\Core\Adapter\Adapter.sln" MMIAdapterCSharp\bin Adapters\CSharpAdapter\
 exit /b 0
 
 ::DeployCoSimulator
@@ -323,6 +338,18 @@ if %ERRORLEVEL% NEQ 0 (
 		call :halt 1
 	)
 exit /b 0
+
+:CheckPowershell
+SET "PSCMD=$ppid=$pid;while($i++ -lt 3 -and ($ppid=(Get-CimInstance Win32_Process -Filter ('ProcessID='+$ppid)).ParentProcessId)) {}; (Get-Process -EA Ignore -ID $ppid).Name"
+
+for /f "tokens=*" %%i in ('powershell -noprofile -command "%PSCMD%"') do SET %1=%%i
+
+IF ["%PARENT%"] == ["powershell"] (
+	ECHO This script should not run from within a Powershell but a Command Prompt aka cmd
+	call :halt 1
+) ELSE (
+    exit /b 1
+)
 
 
 :: Sets the errorlevel and stops the batch immediately

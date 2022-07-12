@@ -9,6 +9,7 @@ using MMIStandard;
 using MMICSharp.Common.Tools;
 using MMICSharp.Common.Attributes;
 using System.Linq;
+using MMICSharp.MMICSharp_Core.MMICore.Common.Tools;
 
 namespace ReachMMU
 {
@@ -88,7 +89,8 @@ namespace ReachMMU
         }
 
         #endregion
-
+        
+        private static TimeProfiler timeProfiler = TimeProfiler.GetProfiler("ReachMMUImplLog", "MMUs");
 
         /// <summary>
         /// Initialization method -> just call the base class
@@ -98,6 +100,8 @@ namespace ReachMMU
         /// <returns></returns>
         public override MBoolResponse Initialize(MAvatarDescription avatarDescription, Dictionary<string, string> properties)
         {
+            var stopwatch = timeProfiler.StartWatch();
+
             MBoolResponse response = base.Initialize(avatarDescription, properties);
 
             //Setup the skeleton access
@@ -106,6 +110,8 @@ namespace ReachMMU
 
             //Create a new constraint manager
             this.constraintManager = new ConstraintManager(this.SceneAccess);
+
+            timeProfiler.StopWatch("ReachMMUImpl_Initialize", stopwatch);
 
             return response;
         }
@@ -125,6 +131,8 @@ namespace ReachMMU
         [MParameterAttribute("Trajectory", "MPathConstraint", "Optionally defined trajectory for reaching.", false)]
         public override MBoolResponse AssignInstruction(MInstruction instruction, MSimulationState simulationState)
         {
+            var stopwatch = timeProfiler.StartWatch();
+
             //Setup the ik
             this.ServiceAccess.IKService.Setup(this.AvatarDescription, new Dictionary<string,string>());
 
@@ -163,6 +171,8 @@ namespace ReachMMU
                 tempConstraints.Clear();
             }
 
+            timeProfiler.StopWatch("ReachMMUImpl_AssignInstruction", stopwatch);
+
             //Return true/success
             return new MBoolResponse(true);
         }
@@ -176,6 +186,8 @@ namespace ReachMMU
         /// <returns></returns>
         public override MSimulationResult DoStep(double time, MSimulationState simulationState)
         {
+            var stopwatch = timeProfiler.StartWatch();
+
             //Create a new simulation result
             MSimulationResult result = new MSimulationResult()
             {
@@ -312,7 +324,9 @@ namespace ReachMMU
 
             //Just for better understanding -> Assign the previous constraints + integrated ones to the result (this is not neccessary since the constraint manager is operating on the reference)
             result.Constraints = globalConstraints;
-            
+
+            timeProfiler.StopWatch("ReachMMUImpl_DoStep", stopwatch);
+
             //Return the result
             return result;
         }

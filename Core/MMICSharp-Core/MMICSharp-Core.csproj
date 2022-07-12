@@ -33,7 +33,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=5.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>packages\NLog.5.0.1\lib\net45\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -59,7 +63,108 @@
   <ItemGroup>
     <Compile Include="Properties/AssemblyInfo.cs" />
     <Compile Include="./MMICSharp-Core/MMIStandard/*.cs" />
-    <Compile Include="./MMICSharp-Core/MMICore/**/*.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\IAdapterAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\IAdapterClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\LocalAdapterAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\MMIService.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\MotionModelUnitAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\RemoteAdapterAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\Abstraction\Threading.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\IMotionModelUnitAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Access\MMUAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\AdapterController.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\AdapterRegistrationHandler.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\AdapterServer.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\AvatarContent.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\IMMUInstantiation.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\IMMUProvider.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\Logger.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\MMUProvider\CompositeMMUProvider.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\MMUProvider\DescriptionBasedMMUProvider.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\MMUProvider\FileBasedMMUProvider.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\MMUProvider\ZipBasedMMUProvider.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\Options.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\SessionCleaner.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\SessionContent.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\SessionData.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\SessionID.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Adapter\ThriftAdapterImplementation.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\AdapterClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\ClientBase.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\CollisionDetectionServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\GraspPoseServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\IKServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\MMIRegisterServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\MMIServiceBaseClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\PathPlanningServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\PostureBlendingServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\RetargetingServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Clients\Services\WalkPointEstimationServiceClient.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\AdapterEndpoint.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Attributes\MDependencyAttribute.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Attributes\MMUDescriptionAttribute.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Attributes\MParameterAttribute.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Attributes\MSimulationEventAttribute.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Communication\Extensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Communication\Serialization.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Communication\WebAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Extensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\IMotionModelUnitDev.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\IServiceAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\MMIScene.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\MMUBase.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\ServiceAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Skeleton\IntermediateSkeleton.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Skeleton\ISDescription.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Skeleton\Joint.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Skeleton\RetargetingService.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Skeleton\RJoint.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\ThriftServerBase.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Tools\Blending.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Tools\BlendingMask.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Tools\ConstraintManager.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Tools\InstructionValidation.cs" />
+    <Compile Include="MMICSharp-Core\MMICore\Common\Tools\TimeProfiler.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Common\Tools\TransitionModeler.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\BML.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimAction.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimTopic.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimulationAccess.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimulationEnumerator.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimulationFrame.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimulationLogEvent.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\CoSimulationRecord.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Internal\MMUContainer.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Internal\MotionTask.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Internal\SerializableCoSimulationState.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\MMICoSimulator.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\MotionTiming.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\NestedMMUBase.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Solvers\ICoSimulationSolver.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Solvers\IKSolver.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Solvers\JointConstraintSolver.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Solvers\LocalJointConstraintSolver.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Solvers\LocalPostureSolver.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\SynchronizationCondition.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\CoSimulation\Utils.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\Conversion.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\Extensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MAvatarExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MAvatarPostureExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MAvatarPostureValuesExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MGeometryConstraintExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MIntervalExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MotionInstructionFactory.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MPathConstraintExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MQuaternionExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MRotationConstraintExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MSceneObjectFactory.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MTransformExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MTranslationConstraintExtensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\MVector3Extensions.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Extensions\PropertiesCreator.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Services\ServiceController.cs" />
+    <Compile Include=".\MMICSharp-Core\MMICore\Services\ServiceRegistrationHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

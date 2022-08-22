@@ -143,7 +143,7 @@ namespace TurnMMU
                 MTransform sceneObjectTransform = this.SceneAccess.GetTransformByID(hand.Instruction.Properties["SubjectID"]);
 
                 //Compute the relative transform of the hand
-                hand.Offset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handPosition), sceneObjectTransform.InverseTransformRotation(handRotation));
+                hand.Offset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handPosition), sceneObjectTransform.InverseTransformRotation(handRotation), new MVector3(1, 1, 1));
 
                 hand.Initialized = true;
 
@@ -286,7 +286,7 @@ namespace TurnMMU
 
 
                 //Compute the next handpose based on the offset
-                MTransform nextHandTransform = new MTransform("", nextObjectTransform.TransformPoint(hand.Offset.Position), nextObjectTransform.TransformRotation(hand.Offset.Rotation));
+                MTransform nextHandTransform = new MTransform("", nextObjectTransform.TransformPoint(hand.Offset.Position), nextObjectTransform.TransformRotation(hand.Offset.Rotation), new MVector3(1, 1, 1));
 
 
                 //Set the ik constraints
@@ -294,7 +294,7 @@ namespace TurnMMU
                 {
                     GeometryConstraint = new MGeometryConstraint("")
                     {
-                        ParentToConstraint = new MTransform(Guid.NewGuid().ToString(), nextHandTransform.Position, nextHandTransform.Rotation)
+                        ParentToConstraint = new MTransform(Guid.NewGuid().ToString(), nextHandTransform.Position, nextHandTransform.Rotation, new MVector3(1, 1, 1))
                     }
                 });
                     

@@ -192,7 +192,7 @@ namespace ReleaseMMU
                     this.trajectory = pathConstraint.GetMTransformList();
 
                     //Add the target transform
-                    this.trajectory.Add(new MTransform("targetTransform", new MVector3(0, 0, 0), new MQuaternion(0, 0, 0, 1)));
+                    this.trajectory.Add(new MTransform("targetTransform", new MVector3(0, 0, 0), new MQuaternion(0, 0, 0, 1), new MVector3(1, 1, 1)));
 
                     MMICSharp.Logger.Log(MMICSharp.Log_level.L_INFO, $"Assigned hand trajectory. Number elements: {trajectory.Count}, hand: {this.handJoint}");
                 }

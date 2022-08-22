@@ -135,7 +135,7 @@ namespace MoveMMU
                 MTransform sceneObjectTransform = this.SceneAccess.GetTransformByID(hand.Instruction.Properties.GetValue("SubjectID","subjectID"));
 
                 //Compute the relative transform of the hand
-                hand.Offset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handPosition), sceneObjectTransform.InverseTransformRotation(handRotation));
+                hand.Offset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handPosition), sceneObjectTransform.InverseTransformRotation(handRotation), new MVector3(1, 1, 1));
 
 
                 //bool addPseudoPoint = true;
@@ -251,7 +251,7 @@ namespace MoveMMU
 
 
                 //Compute the next handpose based on the offset
-                MTransform nextHandTransform = new MTransform("",nextObjectTransform.TransformPoint(hand.Offset.Position), nextObjectTransform.TransformRotation(hand.Offset.Rotation));
+                MTransform nextHandTransform = new MTransform("",nextObjectTransform.TransformPoint(hand.Offset.Position), nextObjectTransform.TransformRotation(hand.Offset.Rotation), new MVector3(1, 1, 1));
 
                 //Set the ik constraints
                 constraintManager.SetEndeffectorConstraint(hand.Type, nextHandTransform.Position, nextHandTransform.Rotation);

@@ -259,7 +259,7 @@ namespace ReachMMU
                         GeometryConstraint = new MGeometryConstraint()
                         {
                             ParentObjectID = "",
-                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), targetTransform.Position, targetTransform.Rotation)
+                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), targetTransform.Position, targetTransform.Rotation, new MVector3(1,1,1))
                         }
                     });
 

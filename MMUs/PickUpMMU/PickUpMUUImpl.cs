@@ -40,18 +40,18 @@ namespace PickUpMMU
         public override MBoolResponse AssignInstruction(MInstruction instruction, MSimulationState simulationState)
         {
 
-            MInstruction idleInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Idle", "Pose/Idle");
+            MInstruction idleInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Idle", "Pose/Idle", this.AvatarDescription.AvatarID);
 
-            MInstruction reachInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Reach", "Pose/Reach");
+            MInstruction reachInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Reach", "Pose/Reach", this.AvatarDescription.AvatarID);
 
 
-            MInstruction graspInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Grasp", "Object/Grasp")
+            MInstruction graspInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Grasp", "Object/Grasp", this.AvatarDescription.AvatarID)
             {
                 StartCondition = reachInstruction.ID + ":" + mmiConstants.MSimulationEvent_End
             };
 
 
-            MInstruction carryInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Carry", "Object/Carry")
+            MInstruction carryInstruction = new MInstruction(MInstructionFactory.GenerateID(), "Carry", "Object/Carry", this.AvatarDescription.AvatarID)
             {
                 StartCondition = graspInstruction.ID + ":" + mmiConstants.MSimulationEvent_End
             };

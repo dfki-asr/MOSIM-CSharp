@@ -389,13 +389,13 @@ namespace GraspMMUSimple
                         MGeometryConstraint geomConstraint = hand.FinalPosture.JointConstraints.Find(s => s.JointType == MJointType.LeftWrist).GeometryConstraint;
 
                         //Get the transform of the wrist as defined in the joint constraint (recompute the global position (if locally defined))
-                        MTransform leftWristTransform = new MTransform("", geomConstraint.GetGlobalPosition(this.SceneAccess), geomConstraint.GetGlobalRotation(this.SceneAccess));
+                        MTransform leftWristTransform = new MTransform("", geomConstraint.GetGlobalPosition(this.SceneAccess), geomConstraint.GetGlobalRotation(this.SceneAccess), new MVector3(1, 1, 1));
 
                         //Compute the offset of the particular finger
                         MVector3 offset = MTransformExtensions.InverseTransformPoint(leftWristTransform, globalPos);
                             
                         //Create a transform representing the current wrist location
-                        MTransform currentGlobalWrist = new MTransform("", this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, MJointType.LeftWrist), this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, MJointType.LeftWrist));
+                        MTransform currentGlobalWrist = new MTransform("", this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, MJointType.LeftWrist), this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, MJointType.LeftWrist), new MVector3(1, 1, 1));
 
                         //Recompute the global position of the finger based on the current wrist transform and the offset
                         globalPos = MTransformExtensions.TransformPoint(currentGlobalWrist, offset);
@@ -409,13 +409,13 @@ namespace GraspMMUSimple
                         MGeometryConstraint geomConstraint = hand.FinalPosture.JointConstraints.Find(s => s.JointType == MJointType.RightWrist).GeometryConstraint;
 
                         //Get the transform of the wrist as defined in the joint constraint (recompute the global position (if locally defined))
-                        MTransform rightWristTransform = new MTransform("", geomConstraint.GetGlobalPosition(this.SceneAccess), geomConstraint.GetGlobalRotation(this.SceneAccess));
+                        MTransform rightWristTransform = new MTransform("", geomConstraint.GetGlobalPosition(this.SceneAccess), geomConstraint.GetGlobalRotation(this.SceneAccess), new MVector3(1, 1, 1));
 
                         //Compute the offset of the particular finger
                         MVector3 offset = MTransformExtensions.InverseTransformPoint(rightWristTransform, globalPos);
 
                         //Create a transform representing the current wrist location
-                        MTransform currentGlobalWrist = new MTransform("", this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, MJointType.RightWrist), this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, MJointType.RightWrist));
+                        MTransform currentGlobalWrist = new MTransform("", this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, MJointType.RightWrist), this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, MJointType.RightWrist), new MVector3(1, 1, 1));
 
                         //Recompute the global position of the finger based on the current wrist transform and the offset
                         globalPos = MTransformExtensions.TransformPoint(currentGlobalWrist, offset);

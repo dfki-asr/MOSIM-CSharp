@@ -201,7 +201,7 @@ namespace CarryMMUNested
             this.currentInstructionID = MInstructionFactory.GenerateID();
 
             //Create a new subinstruction utilizing the  moving target
-            MInstruction subInstruction = new MInstruction(currentInstructionID, "NestedMove", "move")
+            MInstruction subInstruction = new MInstruction(currentInstructionID, "NestedMove", "move", instruction.AvatarID)
             {
                 Properties = PropertiesCreator.Create("TargetID", moveTarget.ID, "SubjectID", instruction.Properties["TargetID"], "Hand", instruction.Properties["Hand"])
             };
@@ -275,7 +275,7 @@ namespace CarryMMUNested
                     this.currentInstructionID = MInstructionFactory.GenerateID();
 
                     //Create a new subinstruction utilizing the  moving target
-                    MInstruction subInstruction = new MInstruction(currentInstructionID, "NestedMove", "move")
+                    MInstruction subInstruction = new MInstruction(currentInstructionID, "NestedMove", "move", instruction.AvatarID)
                     {
                         Properties = PropertiesCreator.Create("TargetID", moveTarget.ID, "SubjectID", instruction.Properties["TargetID"], "Hand", instruction.Properties["Hand"])
                     };

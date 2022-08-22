@@ -169,7 +169,7 @@ namespace CarryMMUSimple
             MQuaternion currentHandRotation = this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, this.handJoint);
 
             //Create a new transform representing the "virtual" transform of the hand
-            MTransform handTransform = new MTransform("hand", currentHandPosition, currentHandRotation);
+            MTransform handTransform = new MTransform("hand", currentHandPosition, currentHandRotation, new MVector3(1, 1, 1));
 
             //Compute the offsets between hand <-> object
             this.objectPositionOffset = handTransform.InverseTransformPoint(objectTransform.Position);
@@ -246,7 +246,7 @@ namespace CarryMMUSimple
             float weight = Math.Max(0, 1 - distanceToGoal);
 
             //Create a new transform representing the next hand transform
-            MTransform newHandTransform = new MTransform("", currentHandPosition.Clone(), currentHandRotation.Clone())
+            MTransform newHandTransform = new MTransform("", currentHandPosition.Clone(), currentHandRotation.Clone(), new MVector3(1, 1, 1))
             {
                 //Compute the new hand position (normalize delta position and multiply by max distance)
                 Position = currentHandPosition.Add(deltaPosition.Normalize().Multiply(Math.Min(deltaPosition.Magnitude(), maxDistance))),

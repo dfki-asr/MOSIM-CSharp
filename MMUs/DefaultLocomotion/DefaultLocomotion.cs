@@ -128,7 +128,7 @@ namespace ReachMMU
                             rot = rtCstr.GetQuaternion();
                         }
                     }
-                    this.targetTransform = new MTransform("", pos, rot);
+                    this.targetTransform = new MTransform("", pos, rot, new MVector3(1,1,1));
                 }
                 
             } else

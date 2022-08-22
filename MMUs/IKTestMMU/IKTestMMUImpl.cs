@@ -74,7 +74,7 @@ namespace IKTestMMU
                     {
                         GeometryConstraint = new MGeometryConstraint("")
                         {
-                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), LeftHandTarget.Transform.Position, LeftHandTarget.Transform.Rotation),
+                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), LeftHandTarget.Transform.Position, LeftHandTarget.Transform.Rotation, new MVector3(1, 1, 1)),
                             WeightingFactor = 1.0f,
                         },
                         JointType = MJointType.LeftWrist
@@ -90,7 +90,7 @@ namespace IKTestMMU
                     {
                         GeometryConstraint = new MGeometryConstraint("")
                         {
-                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), RightHandTarget.Transform.Position, RightHandTarget.Transform.Rotation),
+                            ParentToConstraint = new MTransform(System.Guid.NewGuid().ToString(), RightHandTarget.Transform.Position, RightHandTarget.Transform.Rotation, new MVector3(1, 1, 1)),
                             WeightingFactor = 1.0f
                         },
                         JointType = MJointType.RightWrist

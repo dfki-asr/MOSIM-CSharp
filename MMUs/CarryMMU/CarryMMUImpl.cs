@@ -245,10 +245,10 @@ namespace CarryMMU
                 }
 
                 //Compute the relative transform of the hand (hand relative to object)
-                hand.HandOffset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handTransform.Position), sceneObjectTransform.InverseTransformRotation(handTransform.Rotation));
+                hand.HandOffset = new MTransform("", sceneObjectTransform.InverseTransformPoint(handTransform.Position), sceneObjectTransform.InverseTransformRotation(handTransform.Rotation), new MVector3(1, 1, 1));
 
                 //Compute the inverse offset (object relative to hand)
-                hand.ObjectOffset = new MTransform("", handTransform.InverseTransformPoint(sceneObjectTransform.Position), handTransform.InverseTransformRotation(sceneObjectTransform.Rotation));
+                hand.ObjectOffset = new MTransform("", handTransform.InverseTransformPoint(sceneObjectTransform.Position), handTransform.InverseTransformRotation(sceneObjectTransform.Rotation), new MVector3(1, 1, 1));
 
                 //Set state to positioning
                 hand.State = CarryState.Positioning;
@@ -291,7 +291,7 @@ namespace CarryMMU
                     MVector3 carryPosition = refTransform.Position.Add(forward.Multiply(this.carryDistanceBothHanded)).Add(new MVector3(0, carryHeightBothHanded, 0f));
 
                     //Forwad + offset
-                    this.internalCarryTransform = new MTransform("CarryTarget", refTransform.InverseTransformPoint(carryPosition), refTransform.InverseTransformRotation(currentObjectTransform.Rotation));
+                    this.internalCarryTransform = new MTransform("CarryTarget", refTransform.InverseTransformPoint(carryPosition), refTransform.InverseTransformRotation(currentObjectTransform.Rotation), new MVector3(1, 1, 1));
                 }
 
             }
@@ -571,7 +571,7 @@ namespace CarryMMU
             }
 
             MTransform nextObjectPose = this.DoLocalMotionPlanning(rootVelocity + positionObjectVelocity, TimeSpan.FromSeconds(time), currentObjectTransform.Position, currentObjectTransform.Rotation, targetObjectTransform.Position, targetObjectTransform.Rotation);
-            MTransform nextObjectTransform = new MTransform("",nextObjectPose.Position, nextObjectPose.Rotation);
+            MTransform nextObjectTransform = new MTransform("",nextObjectPose.Position, nextObjectPose.Rotation, new MVector3(1, 1, 1));
 
 
             //Update the position of the object
@@ -593,7 +593,7 @@ namespace CarryMMU
             foreach (HandContainer hand in this.ActiveHands)
             {
                 //Update the hands
-                MTransform nextHandPose = new MTransform("",nextObjectTransform.TransformPoint(hand.HandOffset.Position), nextObjectTransform.TransformRotation(hand.HandOffset.Rotation));
+                MTransform nextHandPose = new MTransform("",nextObjectTransform.TransformPoint(hand.HandOffset.Position), nextObjectTransform.TransformRotation(hand.HandOffset.Rotation), new MVector3(1, 1, 1));
 
                 //Set a new endeffector constraint
                 this.constraintManager.SetEndeffectorConstraint(hand.JointType, nextHandPose.Position, nextHandPose.Rotation, hand.ConstraintID);
@@ -612,7 +612,7 @@ namespace CarryMMU
                 //Only consider the rotation around y axis
                 double yRotation = this.GetRootRotation(this.simulationState.Initial).ToEuler().Y;
                     
-                MTransform rootTransform = new MTransform("", this.GetRootPosition(this.simulationState.Initial), MQuaternionExtensions.FromEuler(new MVector3(0, yRotation, 0)));
+                MTransform rootTransform = new MTransform("", this.GetRootPosition(this.simulationState.Initial), MQuaternionExtensions.FromEuler(new MVector3(0, yRotation, 0)), new MVector3(1, 1, 1));
 
                 //Update the new relative coordinates
                 this.relativeObjectRotation = rootTransform.InverseTransformRotation(nextObjectTransform.Rotation);
@@ -772,7 +772,7 @@ namespace CarryMMU
             foreach (HandContainer hand in this.ActiveHands)
             {
                 //Update the hands
-                MTransform nextHandPose = new MTransform("",nextObjectTransform.TransformPoint(hand.HandOffset.Position), nextObjectTransform.TransformRotation(hand.HandOffset.Rotation));
+                MTransform nextHandPose = new MTransform("",nextObjectTransform.TransformPoint(hand.HandOffset.Position), nextObjectTransform.TransformRotation(hand.HandOffset.Rotation), new MVector3(1, 1, 1));
 
                 this.constraintManager.SetEndeffectorConstraint(hand.JointType, nextHandPose.Position, nextHandPose.Rotation, hand.ConstraintID);
             }
@@ -802,7 +802,7 @@ namespace CarryMMU
                 MTransform targetTr = SceneAccess.GetTransformByID(this.CarryTargetName);
 
                 //The transform of the carry target
-                MTransform targetTransform = new MTransform("", targetTr.Position, targetTr.Rotation);
+                MTransform targetTransform = new MTransform("", targetTr.Position, targetTr.Rotation, new MVector3(1, 1, 1));
 
                 //Compute the global position of the respective hand based on the object
                 MVector3 targetHandPosition = targetTransform.TransformPoint(hand.HandOffset.Position);

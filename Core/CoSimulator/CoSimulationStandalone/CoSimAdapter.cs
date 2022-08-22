@@ -18,9 +18,12 @@ namespace CoSimulationStandalone
 
         public override MBoolResponse CloseSession(string sessionID)
         {
+            string avatarID = "";
+            // TODO Utilize AvatarID Properly
+
             foreach(var mmu in this.GetMMus(sessionID))
             {
-                base.Dispose(mmu.ID, sessionID);
+                base.Dispose(mmu.ID, sessionID, avatarID);
             }
             return base.CloseSession(sessionID);
         }

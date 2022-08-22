@@ -132,21 +132,16 @@ namespace MMICoSimulation
         //Callback for assigning an instruction to the co simulator
         public MBoolResponse AssignInstruction(MInstruction instruction, Dictionary<string, string> properties)
         {
-            string avatarID;
-            if (properties.TryGetValue("AvatarID", out avatarID))
+            string avatarID = instruction.AvatarID;
+            this.CleanCosimulators(avatarID);
+            for(int i = 0; i < this.cosimMMUs.Count; i++)
             {
-                this.CleanCosimulators(avatarID);
-                for(int i = 0; i < this.cosimMMUs.Count; i++)
+                if(this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
                 {
-                    if(this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
-                    {
-                        return this.accesses[i].AssignInstruction(instruction, null);
-                    }
+                    return this.accesses[i].AssignInstruction(instruction, null);
                 }
-                return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
             }
-            return new MBoolResponse(false) { LogData = new List<string>() { $"No avatarID found in the properties" } };
-            //Directly call the co-simulator
+            return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 
 
@@ -208,21 +203,16 @@ namespace MMICoSimulation
         /// <param name="clientAddress"></param>
         /// <param name="eventType">"AvatarID"/"eventType"</param>
         /// <returns></returns>
-        public MBoolResponse RegisterAtEvent(MIPAddress clientAddress, string eventType)
+        public MBoolResponse RegisterAtEvent(MIPAddress clientAddress, string eventType, string avatarID)
         {
-            var parts = eventType.Split('/');
-            if(parts.Length > 1)
+            for (int i = 0; i < this.cosimMMUs.Count; i++)
             {
-                for (int i = 0; i < this.cosimMMUs.Count; i++)
+                if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
                 {
-                    if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == parts[0])
-                    {
-                        return this.accesses[i].RegisterAtEvent(clientAddress, parts[1]);
-                    }
+                    return this.accesses[i].RegisterAtEvent(clientAddress, eventType, avatarID);
                 }
-                return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {parts[0]}" } };
             }
-            return new MBoolResponse(false) { LogData = new List<string>() { $"No avatar ID found. Please separate AvatarID and eventType with a /" } };
+            return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 
         /// <summary>
@@ -231,29 +221,23 @@ namespace MMICoSimulation
         /// <param name="clientAddress"></param>
         /// <param name="eventType"></param>
         /// <returns></returns>
-        public MBoolResponse UnregisterAtEvent(MIPAddress clientAddress, string eventType)
+        public MBoolResponse UnregisterAtEvent(MIPAddress clientAddress, string eventType, string avatarID)
         {
-            var parts = eventType.Split('/');
-            if (parts.Length > 1)
+            for (int i = 0; i < this.cosimMMUs.Count; i++)
             {
-                for (int i = 0; i < this.cosimMMUs.Count; i++)
+                if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
                 {
-                    if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == parts[0])
-                    {
-                        return this.accesses[i].UnregisterAtEvent(clientAddress, parts[1]);
-                    }
+                    return this.accesses[i].UnregisterAtEvent(clientAddress, eventType, avatarID);
                 }
-                return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {parts[0]}" } };
             }
-            return new MBoolResponse(false) { LogData = new List<string>() { $"No avatar ID found. Please separate AvatarID and eventType with a /" } };
-            
+            return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 
         /// <summary>
         /// Aborts all instructions
         /// </summary>
         /// <returns></returns>
-        public MBoolResponse Abort()
+        public MBoolResponse Abort(string avatarID)
         {
             return new MBoolResponse(false) { LogData = new List<string>() { $"Abort currently not available." } };
         }
@@ -356,26 +340,26 @@ namespace MMICoSimulation
             return new MBoolResponse(false);
         }
 
-        public List<MCoSimulationEvents> GetHistoryFromTime(double startTime, double endTime, string eventType)
+        public List<MCoSimulationEvents> GetHistoryFromTime(double startTime, double endTime, string eventType, string avatarID)
         {
             Logger.LogError("GetHistoryFromTime not implemented. Returning empty list. ");
             return new List<MCoSimulationEvents>();
             //throw new NotImplementedException();
         }
 
-        public List<MCoSimulationEvents> GetHistoryFromFrames(int fromFrame, int toFrame, string eventType)
+        public List<MCoSimulationEvents> GetHistoryFromFrames(int fromFrame, int toFrame, string eventType, string avatarID)
         {
             Logger.LogError("GetHistoryFromFrames not implemented. Returning empty list. ");
             return new List<MCoSimulationEvents>();
         }
 
-        public List<MCoSimulationEvents> GetHistory(string eventType)
+        public List<MCoSimulationEvents> GetHistory(string eventType, string avatarID)
         {
             Logger.LogError("GetHistory not implemented. Returning empty list. ");
             return new List<MCoSimulationEvents>();
         }
 
-        public MCoSimulationEvents GetCurrentEvents()
+        public MCoSimulationEvents GetCurrentEvents(string avatarID)
         {
             Logger.LogError("GetCurrentEvents not implemented. Returning null. ");
             return new MCoSimulationEvents();

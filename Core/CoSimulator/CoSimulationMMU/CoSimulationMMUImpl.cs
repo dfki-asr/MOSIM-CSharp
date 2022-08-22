@@ -95,9 +95,18 @@ namespace CoSimulationMMU
 
             MMICSharp.Logger.Log(MMICSharp.Log_level.L_INFO, "Try to connect to mmu access...");
 
+            string sceneID;
+            if(!properties.TryGetValue("SceneID", out sceneID))
+            {
+                return new MBoolResponse(false)
+                {
+                    LogData = new List<string>() { "A CoSimulation MMU requires a SceneID to be executed. Please provide the ID of the scene to be running in via the SceneID property in this instruction" }
+                };
+            }
+
 
             //Connect to mmu access and load mmus
-            if (this.mmuAccess.Connect(this.AdapterEndpoint, avatarDescription.AvatarID))
+            if (this.mmuAccess.Connect(this.AdapterEndpoint, avatarDescription.AvatarID, sceneID))
             {
                 List<MMUDescription> loadableMMUs;
                 Dictionary<string, float> priorities;
@@ -384,7 +393,7 @@ namespace CoSimulationMMU
         /// Method for disposing the MMU
         /// </summary>
         /// <returns></returns>
-        public override MBoolResponse Dispose(Dictionary<string,string> parameters)
+        public override MBoolResponse Dispose(string avatarID, Dictionary<string,string> parameters)
         {
             //Dispose the MMU-Access
             this.mmuAccess.Dispose();
@@ -397,7 +406,7 @@ namespace CoSimulationMMU
                 System.Threading.Thread.Yield();
             }
 
-            return this.coSimulator.Dispose(parameters);
+            return this.coSimulator.Dispose(avatarID, parameters);
         }
 
         public MAvatarDescription GetDescription()
@@ -408,17 +417,17 @@ namespace CoSimulationMMU
 
         #region further methods just being forwarded to co-simulation
 
-        public override byte[] CreateCheckpoint()
+        public override byte[] CreateCheckpoint(string avatarID)
         {
-            return this.coSimulator.CreateCheckpoint();
+            return this.coSimulator.CreateCheckpoint(avatarID);
         }
 
-        public override MBoolResponse RestoreCheckpoint(byte[] data)
+        public override MBoolResponse RestoreCheckpoint(byte[] data, string avatarID)
         {
-            return this.coSimulator.RestoreCheckpoint(data);
+            return this.coSimulator.RestoreCheckpoint(data, avatarID);
         }
 
-        public override Dictionary<string, string> ExecuteFunction(string name, Dictionary<string, string> parameters)
+        public override Dictionary<string, string> ExecuteFunction(string name, string avatarID, Dictionary<string, string> parameters)
         {
             switch (name)
             {
@@ -433,7 +442,7 @@ namespace CoSimulationMMU
                     return recordResult;
             }
 
-            return this.coSimulator.ExecuteFunction(name, parameters);
+            return this.coSimulator.ExecuteFunction(name, avatarID, parameters);
         }
 
         #endregion

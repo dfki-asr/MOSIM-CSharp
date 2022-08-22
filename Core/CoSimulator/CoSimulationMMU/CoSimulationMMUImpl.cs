@@ -95,18 +95,8 @@ namespace CoSimulationMMU
 
             MMICSharp.Logger.Log(MMICSharp.Log_level.L_INFO, "Try to connect to mmu access...");
 
-            string sceneID;
-            if(!properties.TryGetValue("SceneID", out sceneID))
-            {
-                return new MBoolResponse(false)
-                {
-                    LogData = new List<string>() { "A CoSimulation MMU requires a SceneID to be executed. Please provide the ID of the scene to be running in via the SceneID property in this instruction" }
-                };
-            }
-
-
             //Connect to mmu access and load mmus
-            if (this.mmuAccess.Connect(this.AdapterEndpoint, avatarDescription.AvatarID, sceneID))
+            if (this.mmuAccess.Connect(this.AdapterEndpoint, avatarDescription.AvatarID))
             {
                 List<MMUDescription> loadableMMUs;
                 Dictionary<string, float> priorities;

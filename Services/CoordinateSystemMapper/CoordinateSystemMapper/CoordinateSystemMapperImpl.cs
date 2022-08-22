@@ -187,7 +187,7 @@ namespace CoordinateSystemMapper
             }
 
 
-            return new MTransform("", new MVector3(vx, vy, vz), new MQuaternion(qx, qy, qz, qw));
+            return new MTransform("", new MVector3(vx, vy, vz), new MQuaternion(qx, qy, qz, qw), new MVector3(1,1,1));
         }
 
         private MTransform FromMMI(MTransform t, MDirection[] axes)
@@ -235,7 +235,7 @@ namespace CoordinateSystemMapper
             }
 
 
-            return new MTransform("", new MVector3(v[0], v[1], v[2]), new MQuaternion(q[0], q[1], q[2], q[3]));
+            return new MTransform("", new MVector3(v[0], v[1], v[2]), new MQuaternion(q[0], q[1], q[2], q[3]), new MVector3(1, 1, 1));
         }
 
 
@@ -246,7 +246,7 @@ namespace CoordinateSystemMapper
 
         public MQuaternion QuaternionFromMMI_L(MQuaternion quat, List<MDirection> coordinateSystem)
         {
-            MTransform t = new MTransform("", new MVector3(0, 0, 0), quat);
+            MTransform t = new MTransform("", new MVector3(0, 0, 0), quat, new MVector3(1, 1, 1));
             t = FromMMI(t, coordinateSystem.ToArray());
             return t.Rotation;
         }
@@ -258,7 +258,7 @@ namespace CoordinateSystemMapper
 
         public MQuaternion QuaternionToMMI_L(MQuaternion quat, List<MDirection> coordinateSystem)
         {
-            MTransform t = new MTransform("", new MVector3(0, 0, 0), quat);
+            MTransform t = new MTransform("", new MVector3(0, 0, 0), quat, new MVector3(1, 1, 1));
             t = ToMMI(t, coordinateSystem.ToArray());
             return t.Rotation;
         }
@@ -296,7 +296,7 @@ namespace CoordinateSystemMapper
 
         public MVector3 VectorFromMMI_L(MVector3 vec, List<MDirection> coordinateSystem)
         {
-            MTransform t = new MTransform("", vec, new MQuaternion());
+            MTransform t = new MTransform("", vec, new MQuaternion(), new MVector3(1, 1, 1));
             t = FromMMI(t, coordinateSystem.ToArray());
             return t.Position;
         }
@@ -308,7 +308,7 @@ namespace CoordinateSystemMapper
 
         public MVector3 VectorToMMI_L(MVector3 vec, List<MDirection> coordinateSystem)
         {
-            MTransform t = new MTransform("", vec, new MQuaternion());
+            MTransform t = new MTransform("", vec, new MQuaternion(), new MVector3(1, 1, 1));
             t = ToMMI(t, coordinateSystem.ToArray());
             return t.Position;
         }

@@ -53,7 +53,7 @@ namespace CoordinateSystemMapperTests
         public void TestIdentity()
         {
             List<MDirection> coordinateSystem = new List<MDirection>() { MDirection.Right, MDirection.Up, MDirection.Forward };
-            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4));
+            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4), new MVector3(1, 1, 1));
             double qlength = t.Rotation.Length();
             t.Rotation.X /= qlength;
             t.Rotation.Y /= qlength;
@@ -80,7 +80,7 @@ namespace CoordinateSystemMapperTests
         public void TestUnreal()
         {
             List<MDirection> coordinateSystem = new List<MDirection>() { MDirection.Forward, MDirection.Right, MDirection.Up };
-            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4));
+            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4), new MVector3(1, 1, 1));
             double qlength = t.Rotation.Length();
             t.Rotation.X /= qlength;
             t.Rotation.Y /= qlength;
@@ -104,7 +104,7 @@ namespace CoordinateSystemMapperTests
         public void TestDFKI()
         {
             List<MDirection> coordinateSystem = new List<MDirection>() { MDirection.Left, MDirection.Up, MDirection.Forward };
-            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4));
+            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4), new MVector3(1, 1, 1));
             double qlength = t.Rotation.Length();
             t.Rotation.X /= qlength;
             t.Rotation.Y /= qlength;
@@ -129,7 +129,7 @@ namespace CoordinateSystemMapperTests
         public void TestBlender()
         {
             List<MDirection> coordinateSystem = new List<MDirection>() { MDirection.Right, MDirection.Forward, MDirection.Up };
-            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4));
+            MTransform t = new MTransform("asdf", new MVector3(1, 2, 3), new MQuaternion(1, 2, 3, 4), new MVector3(1, 1, 1));
             double qlength = t.Rotation.Length();
             t.Rotation.X /= qlength;
             t.Rotation.Y /= qlength;

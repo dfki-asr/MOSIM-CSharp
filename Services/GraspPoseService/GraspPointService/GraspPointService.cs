@@ -181,27 +181,27 @@ namespace GraspPointService
             {
 
                 //MJoint wrist = new MJoint("RightWrist", MJointType.RightWrist, handPos, newWristRotation);
-                Twrist = new MTransform("RightWrist", handPos, newWristRotation);
+                Twrist = new MTransform("RightWrist", handPos, newWristRotation, new MVector3(1, 1, 1));
                 this.global_pos = handPos;
                 this.global_rot = newWristRotation;
 
-                Tthumb = new MTransform(rthumb, GetGlobalTipPosition(rthumb), GetGlobalTipRotation(rthumb));
-                Tindex = new MTransform(rindex, GetGlobalTipPosition(rindex), GetGlobalTipRotation(rindex));
-                Tmiddle = new MTransform(rmiddle, GetGlobalTipPosition(rmiddle), GetGlobalTipRotation(rmiddle));
-                Tring = new MTransform(rring, GetGlobalTipPosition(rring), GetGlobalTipRotation(rring));
-                Tlittle = new MTransform(rlittle, GetGlobalTipPosition(rlittle), GetGlobalTipRotation(rlittle));
+                Tthumb = new MTransform(rthumb, GetGlobalTipPosition(rthumb), GetGlobalTipRotation(rthumb), new MVector3(1, 1, 1));
+                Tindex = new MTransform(rindex, GetGlobalTipPosition(rindex), GetGlobalTipRotation(rindex), new MVector3(1, 1, 1));
+                Tmiddle = new MTransform(rmiddle, GetGlobalTipPosition(rmiddle), GetGlobalTipRotation(rmiddle), new MVector3(1, 1, 1));
+                Tring = new MTransform(rring, GetGlobalTipPosition(rring), GetGlobalTipRotation(rring), new MVector3(1, 1, 1));
+                Tlittle = new MTransform(rlittle, GetGlobalTipPosition(rlittle), GetGlobalTipRotation(rlittle), new MVector3(1, 1, 1));
             }
             else
             {
-                Twrist = new MTransform("LeftWrist", handPos, newWristRotation);
+                Twrist = new MTransform("LeftWrist", handPos, newWristRotation, new MVector3(1, 1, 1));
                 this.global_pos = handPos;
                 this.global_rot = newWristRotation;
 
-                Tthumb = new MTransform(lthumb, GetGlobalTipPosition(lthumb), GetGlobalTipRotation(lthumb));
-                Tindex = new MTransform(lindex, GetGlobalTipPosition(lindex), GetGlobalTipRotation(lindex));
-                Tmiddle = new MTransform(lmiddle, GetGlobalTipPosition(lmiddle), GetGlobalTipRotation(lmiddle));
-                Tring = new MTransform(lring, GetGlobalTipPosition(lring), GetGlobalTipRotation(lring));
-                Tlittle = new MTransform(llittle, GetGlobalTipPosition(llittle), GetGlobalTipRotation(llittle));
+                Tthumb = new MTransform(lthumb, GetGlobalTipPosition(lthumb), GetGlobalTipRotation(lthumb), new MVector3(1, 1, 1));
+                Tindex = new MTransform(lindex, GetGlobalTipPosition(lindex), GetGlobalTipRotation(lindex), new MVector3(1, 1, 1));
+                Tmiddle = new MTransform(lmiddle, GetGlobalTipPosition(lmiddle), GetGlobalTipRotation(lmiddle), new MVector3(1, 1, 1));
+                Tring = new MTransform(lring, GetGlobalTipPosition(lring), GetGlobalTipRotation(lring), new MVector3(1, 1, 1));
+                Tlittle = new MTransform(llittle, GetGlobalTipPosition(llittle), GetGlobalTipRotation(llittle), new MVector3(1, 1, 1));
             }
 
             for (int i = 0; i < 6; i++)

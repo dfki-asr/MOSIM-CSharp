@@ -141,6 +141,7 @@ namespace MMICoSimulation
                     return this.accesses[i].AssignInstruction(instruction, null);
                 }
             }
+            Logger.LogError($"No cosimulator found for avatar id {avatarID}");
             return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 
@@ -212,6 +213,7 @@ namespace MMICoSimulation
                     return this.accesses[i].RegisterAtEvent(clientAddress, eventType, avatarID);
                 }
             }
+            Logger.LogError($"No cosimulator found for avatar id {avatarID}");
             return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 
@@ -230,6 +232,7 @@ namespace MMICoSimulation
                     return this.accesses[i].UnregisterAtEvent(clientAddress, eventType, avatarID);
                 }
             }
+            Logger.LogError($"No cosimulator found for avatar id {avatarID}");
             return new MBoolResponse(false) { LogData = new List<string>() { $"No cosimulator found for avatar id {avatarID}" } };
         }
 

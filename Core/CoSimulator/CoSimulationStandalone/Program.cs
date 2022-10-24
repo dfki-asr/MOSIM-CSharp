@@ -55,6 +55,8 @@ namespace CoSimulationStandalone
 
         /// The address of the thrift server
         private static MIPAddress address = new MIPAddress("127.0.0.1", 8998);
+        private static MIPAddress addressInt = null;
+        private static MIPAddress addressServ = null;
 
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 9009);
@@ -87,10 +89,11 @@ namespace CoSimulationStandalone
             Data.AdapterDescription.Addresses[0] = address;
 
             Data.SessionData = new SessionData();
-            var cosimInitiator = new CosimInstantiator(Data.AdapterDescription.Addresses[0], mmiRegisterAddress);
+            var cosimInitiator = new CosimInstantiator(Data.AdapterDescription.Addresses[0], mmiRegisterAddress, accessAddress : addressServ);
+
             //Create a new adapter controller
             using (AdapterController adapterController = new AdapterController(Data.SessionData, Data.AdapterDescription, mmiRegisterAddress, new DescriptionBasedMMUProvider(Data.CoSimMMUDescription),
-                cosimInitiator, new CoSimAdapter(Data.SessionData, cosimInitiator)))
+                cosimInitiator, new CoSimAdapter(Data.SessionData, cosimInitiator), aint:addressInt))
             {
                 adapterController.Start();
 
@@ -124,6 +127,37 @@ namespace CoSimulationStandalone
                       }
                   }
                 },
+
+                { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
+                { "aserv|addressAccessService=", "The address of the cosim-access server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressServ = new MIPAddress();
+                          addressServ.Address = addr[0];
+                          addressServ.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
 
                 { "r|raddress=", "The address of the register which holds the central information.",
                   v =>
@@ -168,13 +202,16 @@ namespace CoSimulationStandalone
         private MIPAddress registryAddress;
         private MMICoSimulation.StandaloneCoSimulationAccess cosimAccess;
 
-        public CosimInstantiator(MIPAddress adapterAddress, MIPAddress registryAddress)
+        public CosimInstantiator(MIPAddress adapterAddress, MIPAddress registryAddress, MIPAddress accessAddress = null)
         {
             this.adapterAddress = adapterAddress;
             this.registryAddress = registryAddress;
 
             // TODO Find better port management. 
-            cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(new MIPAddress(adapterAddress.Address, 8950), registryAddress);
+            if(accessAddress != null)
+                cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(accessAddress, registryAddress);
+            else
+                cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(new MIPAddress(adapterAddress.Address, 8950), registryAddress);
             cosimAccess.Start();
         }
 

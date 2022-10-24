@@ -18,6 +18,8 @@ namespace GraspPointService
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 8900);
 
+        private static MIPAddress addressInt = null;
+
         /// The path of the mmus
         private static string mmuPath = "";
 
@@ -66,12 +68,28 @@ namespace GraspPointService
             {
                 //int servicePort = 8886;
                 GraspPointService handler = new GraspPointService(address, mmiRegisterAddress);
+
+                MMICSharp.Services.ServiceController controller = new MMICSharp.Services.ServiceController(handler.GetDescription(), mmiRegisterAddress, new MGraspPoseService.Processor(handler), addressInt);
+                controller.Start();
+                Console.ReadLine();
+
+                /*
                 var server = new GraspServer(address.Port, handler);
                 Console.WriteLine("Register the service");
-                reg.RegisterService(handler.ServiceDescription);
+
+                if(addressInt == null)
+                    reg.RegisterService(handler.ServiceDescription);
+                else
+                {
+                    MServiceDescription extDesc = new MServiceDescription(handler.ServiceDescription.Name, handler.ServiceDescription.ID, handler.ServiceDescription.Language,
+                        new List<MIPAddress>() { addressInt });
+                    reg.RegisterService(extDesc);
+
+                }
 
                 Console.WriteLine("Starting the server...");
                 server.Start();
+                */
             }
             catch (Exception x)
             {
@@ -116,6 +134,21 @@ namespace GraspPointService
                       {
                           address.Address = addr[0];
                           address.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
+                 { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
                       }
                   }
                 },

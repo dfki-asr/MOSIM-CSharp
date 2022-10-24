@@ -20,6 +20,8 @@ namespace SkeletonAccessService
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 8900);
 
+        private static MIPAddress addressInt = null;
+
         /// The path of the mmus
         private static string mmuPath = "";
 
@@ -62,19 +64,13 @@ namespace SkeletonAccessService
 
             Console.WriteLine("Retargeting Service");
             string sessionID = Guid.NewGuid().ToString();
-            //ServiceAccess serviceAccess = new ServiceAccess(new MIPAddress("127.0.0.1", 9009), sessionID);
-            ServiceAccess serviceAccess = new ServiceAccess(mmiRegisterAddress, sessionID);
-            var reg = serviceAccess.RegisterService;
             try
             {
                 //int servicePort = 8886;
                 SkeletonAccessInterfaceWrapper handler = new SkeletonAccessInterfaceWrapper(address);
-                var server = new SkeletonAccessServer(address.Port, handler);
-                Console.WriteLine("Register the service");
-                reg.RegisterService(handler.GetDescription());
-
-                Console.WriteLine("Starting the server...");
-                server.Start();
+                MMICSharp.Services.ServiceController controller = new MMICSharp.Services.ServiceController(handler.GetDescription(), mmiRegisterAddress, new MSkeletonAccess.Processor(handler), addressInt);
+                controller.Start();
+                Console.ReadLine();
             }
             catch (Exception x)
             {
@@ -155,6 +151,21 @@ namespace SkeletonAccessService
                       {
                           address.Address = addr[0];
                           address.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
+                 { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
                       }
                   }
                 },

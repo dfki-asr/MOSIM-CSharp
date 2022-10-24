@@ -29,6 +29,8 @@ namespace MMIAdapterCSharp
         /// The address of the thrift server
         private static MIPAddress address = new MIPAddress("127.0.0.1", 8900);
 
+        private static MIPAddress addressInt = null;
+
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 9009);
 
@@ -103,7 +105,7 @@ namespace MMIAdapterCSharp
             sessionCleaner.Start();
 
             //Create a new adapter controller which scans the filesystem and checks for MMUs there
-            using (AdapterController adapterController = new AdapterController(sessionData, adapterDescription, mmiRegisterAddress, new FileBasedMMUProvider(sessionData, new List<string>() { mmuPath }, new List<string>() { "C#", "C++CLR" }), new CSharpMMUInstantiator()))
+            using (AdapterController adapterController = new AdapterController(sessionData, adapterDescription, mmiRegisterAddress, new FileBasedMMUProvider(sessionData, new List<string>() { mmuPath }, new List<string>() { "C#", "C++CLR" }), new CSharpMMUInstantiator(), aint : addressInt))
             {
                 //Start the adapter controller
                 adapterController.Start();
@@ -150,6 +152,22 @@ namespace MMIAdapterCSharp
                       }
                   }
                 },
+
+                { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
 
                 { "r|raddress=", "The address of the register which holds the central information.",
                   v =>

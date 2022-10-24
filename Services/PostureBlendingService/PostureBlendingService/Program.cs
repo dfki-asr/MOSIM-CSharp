@@ -17,6 +17,8 @@ namespace PostureBlendingService
         private static MIPAddress address = new MIPAddress();
         private static MIPAddress registerAddress = new MIPAddress();
 
+        private static MIPAddress addressInt = null;
+
         static void Main(string[] args)
         {
 
@@ -30,13 +32,11 @@ namespace PostureBlendingService
                 return;
             }
 
-            //Start the server
-            using (PostureBlendingServiceImpl server = new PostureBlendingServiceImpl(address, registerAddress))
-            {
-                server.Start();
-                Console.ReadLine();
-            }
-            
+
+            PostureBlendingServiceImpl server = new PostureBlendingServiceImpl(address, registerAddress);
+            MMICSharp.Services.ServiceController controller = new MMICSharp.Services.ServiceController(server.GetDescription(), registerAddress, new MPostureBlendingService.Processor(server), addressInt);
+            controller.Start();
+            Console.ReadLine();
         }
 
         /// <summary>
@@ -59,6 +59,21 @@ namespace PostureBlendingService
                       {
                           address.Address = addr[0];
                           address.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
+                { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
                       }
                   }
                 },

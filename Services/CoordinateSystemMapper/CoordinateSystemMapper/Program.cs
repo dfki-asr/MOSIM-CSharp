@@ -19,6 +19,7 @@ namespace CoordinateSystemMapper
 
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 8900);
+        private static MIPAddress addressInt = null;
 
         /// The path of the mmus
         private static string mmuPath = "";
@@ -75,7 +76,7 @@ namespace CoordinateSystemMapper
 
             CoordinateSystemMapperImpl mapper = new CoordinateSystemMapperImpl(address, mmiRegisterAddress);
 
-            ServiceController controller = new MMICSharp.Services.ServiceController(mapper.GetDescription(), mmiRegisterAddress, new MCoordinateSystemMapper.Processor(mapper));
+            ServiceController controller = new MMICSharp.Services.ServiceController(mapper.GetDescription(), mmiRegisterAddress, new MCoordinateSystemMapper.Processor(mapper), addressInt);
             controller.Start();
             Console.ReadLine();
 
@@ -121,6 +122,22 @@ namespace CoordinateSystemMapper
                       }
                   }
                 },
+
+                { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
 
                 { "r|raddress=", "The address of the register which holds the central information.",
                   v =>

@@ -7,6 +7,7 @@ using MMIStandard;
 using MMICSharp.Common;
 using MMICSharp.Adapter;
 using MMICSharp;
+
 namespace RetargetingServiceServer
 {
 
@@ -15,6 +16,7 @@ namespace RetargetingServiceServer
 
         /// The address of the thrift server
         private static MIPAddress address = new MIPAddress("127.0.0.1", 8900);
+        private static MIPAddress addressInt = null; // new MIPAddress("127.0.0.1", 8900);
 
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 8900);
@@ -54,6 +56,12 @@ namespace RetargetingServiceServer
                 return;
             }
 
+            if(addressInt == null)
+            {
+                // no internal address set, using external address
+                addressInt = address;
+            }
+
             Console.WriteLine($"Adapter is reachable at: {address.Address}:{address.Port}");
             Console.WriteLine($"Register is reachable at: {mmiRegisterAddress.Address}:{mmiRegisterAddress.Port}");
             Console.WriteLine($"MMUs will be loaded from: {mmuPath}");
@@ -67,10 +75,16 @@ namespace RetargetingServiceServer
             try
             {
                 //int servicePort = 8886;
-                RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(address.Address, address.Port);
-                var server = new MMIRetargetingThriftServer(address.Port, handler);
+                RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(addressInt.Address, addressInt.Port);
+                var server = new MMIRetargetingThriftServer(addressInt.Port, handler);
                 Console.WriteLine("Register the service");
-                reg.RegisterService(handler.ServiceDescription);
+                MServiceDescription desc = handler.ServiceDescription;
+                
+                // setting remote address
+                desc.Addresses[0].Address = address.Address;
+                desc.Addresses[0].Port = address.Port;
+
+                reg.RegisterService(desc);
 
                 Console.WriteLine("Starting the server...");
                 server.Start();
@@ -157,6 +171,22 @@ namespace RetargetingServiceServer
                       }
                   }
                 },
+
+                { "aint|addressInternal=", "The address of the hostet tcp server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressInt = new MIPAddress();
+                          addressInt.Address = addr[0];
+                          addressInt.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
 
                 { "r|raddress=", "The address of the register which holds the central information.",
                   v =>

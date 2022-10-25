@@ -42,14 +42,14 @@ namespace MMICoSimulation
         /// <param name="coSimulator">The instance of the co-simulator</param>
         /// <param name="address">The address where the CoSimulationAccess should be hosted</param>
         /// <param name="registerAddress">The address of the register</param>
-        public StandaloneCoSimulationAccess(MIPAddress address, MIPAddress registerAddress)
+        public StandaloneCoSimulationAccess(MIPAddress address, MIPAddress registerAddress, MIPAddress accessAddressInternal = null)
         {
             //Add the address to the description
             this.description.Addresses = new List<MIPAddress>() { address };
             this.registerAddress = registerAddress;
 
             //Create a new service controller
-            this.controller = new ServiceController(this.description, registerAddress, new MCoSimulationAccess.Processor(this));
+            this.controller = new ServiceController(this.description, registerAddress, new MCoSimulationAccess.Processor(this), internalAddress: accessAddressInternal);
         }
 
 

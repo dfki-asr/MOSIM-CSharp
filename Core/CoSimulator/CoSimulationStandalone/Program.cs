@@ -57,6 +57,7 @@ namespace CoSimulationStandalone
         private static MIPAddress address = new MIPAddress("127.0.0.1", 8998);
         private static MIPAddress addressInt = null;
         private static MIPAddress addressServ = null;
+        private static MIPAddress addressServInt = null;
 
         ///The address of the register
         private static MIPAddress mmiRegisterAddress = new MIPAddress("127.0.0.1", 9009);
@@ -158,6 +159,21 @@ namespace CoSimulationStandalone
                   }
                 },
 
+                { "aservint|addressAccessServiceInternal=", "The address of the cosim-access server.",
+                  v =>
+                  {
+                      //Split the address to get the ip and port
+                      string[] addr  = v.Split(':');
+
+                      if(addr.Length == 2)
+                      {
+                          addressServInt = new MIPAddress();
+                          addressServInt.Address = addr[0];
+                          addressServInt.Port = int.Parse(addr[1]);
+                      }
+                  }
+                },
+
 
                 { "r|raddress=", "The address of the register which holds the central information.",
                   v =>
@@ -202,14 +218,14 @@ namespace CoSimulationStandalone
         private MIPAddress registryAddress;
         private MMICoSimulation.StandaloneCoSimulationAccess cosimAccess;
 
-        public CosimInstantiator(MIPAddress adapterAddress, MIPAddress registryAddress, MIPAddress accessAddress = null)
+        public CosimInstantiator(MIPAddress adapterAddress, MIPAddress registryAddress, MIPAddress accessAddress = null, MIPAddress accessAddressInternal = null)
         {
             this.adapterAddress = adapterAddress;
             this.registryAddress = registryAddress;
 
             // TODO Find better port management. 
             if(accessAddress != null)
-                cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(accessAddress, registryAddress);
+                cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(accessAddress, registryAddress, accessAddressInternal);
             else
                 cosimAccess = new MMICoSimulation.StandaloneCoSimulationAccess(new MIPAddress(adapterAddress.Address, 8950), registryAddress);
             cosimAccess.Start();

@@ -90,7 +90,7 @@ namespace CoSimulationStandalone
             Data.AdapterDescription.Addresses[0] = address;
 
             Data.SessionData = new SessionData();
-            var cosimInitiator = new CosimInstantiator(Data.AdapterDescription.Addresses[0], mmiRegisterAddress, accessAddress : addressServ);
+            var cosimInitiator = new CosimInstantiator(Data.AdapterDescription.Addresses[0], mmiRegisterAddress, accessAddress : addressServ, accessAddressInternal: addressServInt);
 
             //Create a new adapter controller
             using (AdapterController adapterController = new AdapterController(Data.SessionData, Data.AdapterDescription, mmiRegisterAddress, new DescriptionBasedMMUProvider(Data.CoSimMMUDescription),

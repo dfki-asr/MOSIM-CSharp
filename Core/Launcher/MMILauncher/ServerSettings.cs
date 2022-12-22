@@ -3,7 +3,7 @@
 // Original author(s): Adam Klodowski
 
 using System;
-
+using System.Collections.Generic;
 
 namespace MMILauncher
 {
@@ -76,6 +76,16 @@ namespace MMILauncher
         /// Specifies whether all processes are automatically started at startup
         /// </summary>
         public bool AutoStart = true;
+
+        public Dictionary<string, ExecutableConfig> ExecutableConfigs = null;
+    }
+
+    [Serializable]
+    public class ExecutableConfig
+    {
+        public string Address;
+        public int Port;
+        public Dictionary<string, string> Params;
     }
 
 }

@@ -29,10 +29,12 @@ namespace Communication
     {
         public List<TInterface> AvailableIp;
         public int currentIp = -1;
+        public List<MIPAddress> OccupiedIPEndPointList;
 
         public NetworkAdapters()
         {
             AvailableIp = new List<TInterface>();
+            OccupiedIPEndPointList = new List<MIPAddress>();
             GetNetworkAdapters();
         }
 
@@ -87,6 +89,48 @@ namespace Communication
                 return port;
             }
             return -1; //no ports available within the port to maxPort range
+        }
+
+        public bool IsIpPortAvailable(string ip, int port)
+        {
+            if (port < 0)
+                return false;
+            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
+            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
+            foreach (TcpConnectionInformation tcpi in tcpConnInfoArray)
+            {
+                if (port == tcpi.LocalEndPoint.Port && ip == tcpi.LocalEndPoint.Address.ToString())
+                    return false;
+            }
+            foreach (var occupiedEndPoint in OccupiedIPEndPointList)
+            {
+                if (ip == occupiedEndPoint.Address && port == occupiedEndPoint.Port)
+                    return false;
+            }
+            foreach (var aIp in AvailableIp)
+            {
+                if (ip == aIp.IP)
+                    return true;
+            }
+            return false;
+        }
+
+        public bool ReserveIpPort(string ip, int port)
+        {
+            if (!IsIpPortAvailable(ip, port))
+                return false;
+            OccupiedIPEndPointList.Add(new MIPAddress(ip, port));
+            return true;
+        }
+
+        public int ReserveNextAvailablePort(string ip, int minPort, int maxPort)
+        {
+            for (int port = minPort; port <= maxPort; port++)
+            {
+                if (ReserveIpPort(ip, port))
+                    return port;
+            }
+            return -1;
         }
 
     }

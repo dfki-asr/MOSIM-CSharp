@@ -1432,6 +1432,18 @@ namespace MMILauncher
             }
         }
 
+
+        private ExecutableConfig FindServiceConfigByName(string name)
+        {
+            ExecutableConfig config = null;
+            var executableConfigDic = settings.ExecutableConfigs;
+            if (executableConfigDic != null && executableConfigDic.ContainsKey(name))
+            {
+                config = executableConfigDic[name];
+            }
+            return config;
+        }
+
         /// <summary>
         /// Setups the environment and starts the modules
         /// </summary>
@@ -1445,6 +1457,15 @@ namespace MMILauncher
             port = settings.MinPort - 1; //on the first use the port number is incremented so we don't want to skip the actual first port specified in the settings, thus -1
             //Set the running flag to true
             this.running = true;
+
+            string executableIP = "127.0.0.1";
+            foreach (TInterface exisitingIp in NetworkAdapters.AvailableIp)
+                if (exisitingIp.IP != "127.0.0.1")
+                {
+                    executableIP = exisitingIp.IP;
+                    break;
+                }
+            int executablePort;
 
             //Fetch all modules and start them
             foreach (string folderPath in Directory.GetDirectories(adapterPath))
@@ -1462,15 +1483,28 @@ namespace MMILauncher
                 //Determine the filename of the executable file
                 string executableFile = Directory.GetFiles(folderPath).ToList().Find(s => s.Contains(executableDescription.ExecutableName));
 
-                port = NetworkAdapters.getNextAvailablePort(port, this.settings.MaxPort);
-                if (port == -1)
+                //Find the excutable configuration in the settings by service name
+                ExecutableConfig executableConfig = FindServiceConfigByName(executableDescription.Name);
+
+                // reserve port before executable start
+                if (executableConfig != null && NetworkAdapters.ReserveIpPort(executableIP, executableConfig.Port))
+                {
+                    //executableIP = executableConfig.Address;
+                    executablePort = executableConfig.Port;
+                }
+                else
+                {
+                    executablePort = NetworkAdapters.ReserveNextAvailablePort(executableIP, port, this.settings.MaxPort);
+                }
+                    
+                if (executablePort == -1)
                 {
                     System.Windows.MessageBox.Show("No ports are available to start service or adapters.", "Network error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
                 //Create a controller for the executable process
-                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(RuntimeData.MMIRegisterAddress.Address, port),RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows);
+                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(executableIP, executablePort),RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows);
                 RuntimeData.ExecutableControllers.Add(exeController);
             }
 
@@ -1489,14 +1523,27 @@ namespace MMILauncher
                 MExecutableDescription executableDescription = Serialization.FromJsonString<MExecutableDescription>(File.ReadAllText(descriptionFile));
                 string executableFile = Directory.GetFiles(folderPath).ToList().Find(s => s.Contains(executableDescription.ExecutableName));
 
-                port = NetworkAdapters.getNextAvailablePort(port, this.settings.MaxPort);
-                if (port == -1)
+                //Find the excutable configuration in the settings by service name
+                ExecutableConfig executableConfig = FindServiceConfigByName(executableDescription.Name);
+
+                if (executableConfig != null && NetworkAdapters.ReserveIpPort(executableIP, executableConfig.Port))
+                {
+                    //executableIP = executableConfig.Address;
+                    executablePort = executableConfig.Port;
+
+                }
+                else
+                {
+                    executablePort = NetworkAdapters.ReserveNextAvailablePort(executableIP, port, this.settings.MaxPort);
+                }
+
+                if (executablePort == -1)
                 {
                     System.Windows.MessageBox.Show("No ports are available to start service or adapters.", "Network error", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(RuntimeData.MMIRegisterAddress.Address, port), RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows);
+                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(executableIP, executablePort), RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows);
                 RuntimeData.ExecutableControllers.Add(exeController);
             }
 
@@ -1517,9 +1564,24 @@ namespace MMILauncher
 
                 //Determine the filename of the executable file
                 string executableFile = Directory.GetFiles(folderPath).ToList().Find(s => s.Contains(executableDescription.ExecutableName));
-                port = NetworkAdapters.getNextAvailablePort(port, this.settings.MaxPort);
-                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(RuntimeData.MMIRegisterAddress.Address, port), RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows, true);
 
+                //Find the excutable configuration in the settings by service name
+                ExecutableConfig executableConfig = FindServiceConfigByName(executableDescription.Name);
+                if (executableConfig != null && NetworkAdapters.ReserveIpPort(executableIP, executableConfig.Port))
+                {
+                    //executableIP = executableConfig.Address;
+                    executablePort = executableConfig.Port;
+                }
+                else
+                {
+                    executablePort = NetworkAdapters.ReserveNextAvailablePort(executableIP, port, this.settings.MaxPort);
+                }
+
+                ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(executableIP, executablePort), RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows, true);
+                
+                //port = NetworkAdapters.getNextAvailablePort(port, this.settings.MaxPort);
+                //ExecutableController exeController = new ExecutableController(executableDescription, new MIPAddress(RuntimeData.MMIRegisterAddress.Address, port), RuntimeData.MMIRegisterAddress, mmuPath, executableFile, settings.HideWindows, true);
+                
                 RuntimeData.ExecutableControllers.Add(exeController);
             }
 

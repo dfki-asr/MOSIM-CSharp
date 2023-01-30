@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinateSystemMapper", "CoordinateSystemMapper\CoordinateSystemMapper.csproj", "{544EA2F5-3D7D-42B6-87AC-2CAC81E31679}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinateSystemMapperTests", "CoordinateSystemMapperTests\CoordinateSystemMapperTests.csproj", "{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMICSharp-Core", "..\..\Core\MMICSharp-Core\MMICSharp-Core.csproj", "{DE1D9A38-8343-4F73-A411-40B14D5271CB}"
 EndProject
 Global
@@ -25,14 +23,6 @@ Global
 		{544EA2F5-3D7D-42B6-87AC-2CAC81E31679}.RunDebug|Any CPU.Build.0 = RunDebug|Any CPU
 		{544EA2F5-3D7D-42B6-87AC-2CAC81E31679}.RunRelease|Any CPU.ActiveCfg = RunRelease|Any CPU
 		{544EA2F5-3D7D-42B6-87AC-2CAC81E31679}.RunRelease|Any CPU.Build.0 = RunRelease|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.RunDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.RunDebug|Any CPU.Build.0 = Debug|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.RunRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{E5ABBAF7-A3EF-4AC8-AF8A-13828A96B04E}.RunRelease|Any CPU.Build.0 = Release|Any CPU
 		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE1D9A38-8343-4F73-A411-40B14D5271CB}.Release|Any CPU.ActiveCfg = Release|Any CPU

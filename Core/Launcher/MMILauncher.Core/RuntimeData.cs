@@ -6,7 +6,6 @@ using MMIStandard;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Windows.Data;
 
 namespace MMILauncher.Core
 {
@@ -70,28 +69,12 @@ namespace MMILauncher.Core
         }
     }
 
-    public class SubTypeConverter : IMultiValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if ((values[1]==null) || ((values[1] as string)==""))
-            return String.Format("{0}", values[0], values[1]);
-            else
-            return String.Format("{0} ({1})", values[0], values[1]);
-        }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
     /// <summary>
     /// Static class which contains all the data
     /// </summary>
     public static class RuntimeData
     {
-        public static MIPAddress MMIRegisterAddress = new MIPAddress("127.0.0.1", 9009);
+        public static MIPAddress MMIRegisterAddress = new MIPAddress("127.0.0.1",9009);
         public static int CurrentPort = 8900;
         public static List<string> SessionIds = new List<string>();
 

@@ -103,7 +103,6 @@
     <Compile Include="MMULibrary.cs" />
     <Compile Include="MMULibraryWindow.xaml.cs" />
     <Compile Include="NetwokAdapters.cs" />
-    <Compile Include="ServerSettings.cs" />
     <Compile Include="SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>

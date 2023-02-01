@@ -70,6 +70,7 @@
     <Compile Include="RemoteAdapter.cs" />
     <Compile Include="RemoteService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MMICSharp-Core\MMICSharp-Core.csproj">

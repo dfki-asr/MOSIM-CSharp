@@ -32,7 +32,7 @@ namespace MMILauncher.Console
             registerServer.Start();
 
             //Setup the environment
-            SetupEnvironment(@"..\Adapters", @"..\MMUs", @"..\Services");
+            SetupEnvironment($"..\Adapters", $"..\MMUs", $"..\Services");
 
             System.Console.ReadLine();
 

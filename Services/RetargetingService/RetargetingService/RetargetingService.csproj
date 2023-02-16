@@ -77,7 +77,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="description.json" />
+    <None Include="description.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Core\MMICSharp-Core\MMICSharp-Core.csproj">
@@ -86,8 +88,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>xcopy /y $(ProjectDir)description.json  $(ProjectDir)$(OutDir)
-</PostBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -21,6 +21,8 @@ namespace MMILauncher.Console
 
         static void Main(string[] args)
         {
+            char separator = Path.AltDirectorySeparatorChar;
+            
             Logger.Instance.Level = Log_level.L_DEBUG;
             //
             registerService = new MMIRegisterServiceImplementation();
@@ -32,7 +34,7 @@ namespace MMILauncher.Console
             registerServer.Start();
 
             //Setup the environment
-            SetupEnvironment($"..\Adapters", $"..\MMUs", $"..\Services");
+            SetupEnvironment($"..{separator}Adapters", $".:{separator}MMUs", $"..{separator}Services");
 
             System.Console.ReadLine();
 

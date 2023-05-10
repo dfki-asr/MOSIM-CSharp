@@ -1,6 +1,6 @@
 ﻿// SPDX-License-Identifier: MIT
 // The content of this file has been developed in the context of the MOSIM research project.
-// Original author(s): Felix Gaisbauer
+// Original author(s): Felix Gaisbauer, Janis Sprenger
 
 using MMICSharp.Common;
 using MMICSharp.Common.Attributes;
@@ -31,6 +31,8 @@ namespace CarryMMUSimple
         /// </summary>
         private MJointType handJoint;
 
+        private bool bothHanded = false;
+
         /// <summary>
         /// Flag specifying whether an offset should be added to the hand in order to avoid collisions with the carried object
         /// </summary>
@@ -50,6 +52,9 @@ namespace CarryMMUSimple
         /// The rotation offset of the object relative to the hand
         /// </summary>
         private MQuaternion objectRotationOffset;
+
+        private List<MVector3> handPositionOffset;
+        private List<MQuaternion> handRotationOffset;
 
         /// <summary>
         /// A helper class to manage the constraint list
@@ -72,6 +77,10 @@ namespace CarryMMUSimple
         /// Threshold for the positioningFinishedEvent
         /// </summary>
         private float positioningFinishedThreshold = 0.01f;
+
+        private bool FinishWithGoal = false;
+
+        private string CarryTargetID = "";
 
         #endregion
 
@@ -101,10 +110,11 @@ namespace CarryMMUSimple
         /// <param name="simulationState"></param>
         /// <returns></returns>
         [MParameterAttribute("TargetID", "ID", "The id of the object which should be carried", true)]
-        [MParameterAttribute("Hand", "{Left,Right}", "The hand of the carry motion", true)]
+        [MParameterAttribute("Hand", "{Left,Right,Both}", "The hand of the carry motion", true)]
         [MParameterAttribute("AddOffset", "bool", "Specifies whether an offset is automatically added to the carry position considering the object dimensions", false)]
-        //[MParameterAttribute("CarryTargetID", "ID", "Specifies an optional carry target. If defined, this is used instead of the underlying posture as target.", false)]
+        [MParameterAttribute("CarryTargetID", "ID", "Specifies an optional carry target. If defined, this is used instead of the underlying posture as target.", false)]
         [MParameterAttribute("PositioningFinishedThreshold", "float", "Threshold for the positioning finished event.", false)]
+        [MParameterAttribute("FinishWithGoal", "bool", "Specifies, whether the MMU should end once the goal is reached (default, false)", false)]
         [MParameterAttribute("Velocity", "float", "Specifies the velocity of the reaching.", false)]
 
         public override MBoolResponse AssignInstruction(MInstruction instruction, MSimulationState simulationState)
@@ -122,6 +132,7 @@ namespace CarryMMUSimple
             //Get the target id
             if (instruction.Properties.ContainsKey("TargetID"))
                 this.objectTransform = this.SceneAccess.GetTransformByID(instruction.Properties["TargetID"]);
+
             //Error id not available
             else
             {
@@ -134,7 +145,7 @@ namespace CarryMMUSimple
             //Get the target hand
             if (instruction.Properties.ContainsKey("Hand"))
             {
-                if (instruction.Properties["Hand"] == "Left")
+                if (instruction.Properties["Hand"] == "Left" || instruction.Properties["Hand"] == "Both")
                     this.handJoint = MJointType.LeftWrist;
 
                 if (instruction.Properties["Hand"] == "Right")
@@ -149,9 +160,17 @@ namespace CarryMMUSimple
                 };
             }
 
+            if (instruction.Properties["Hand"] == "Both")
+                bothHanded = true;
+            else
+                bothHanded = false;
+
             //Parse optional property
             if (instruction.Properties.ContainsKey("PositioningFinishedThreshold"))
                 float.TryParse(instruction.Properties["PositioningFinishedThreshold"], out this.positioningFinishedThreshold);
+
+            if (instruction.Properties.ContainsKey("FinishWithGoal"))
+                bool.TryParse(instruction.Properties["FinishWithGoal"], out this.FinishWithGoal);
 
             //Parse optional property
             if (instruction.Properties.ContainsKey("AddOffset"))
@@ -175,7 +194,24 @@ namespace CarryMMUSimple
             this.objectPositionOffset = handTransform.InverseTransformPoint(objectTransform.Position);
             this.objectRotationOffset = handTransform.InverseTransformRotation(objectTransform.Rotation);
 
-
+            if (instruction.Properties.ContainsKey("CarryTargetID"))
+            {
+                this.CarryTargetID = instruction.Properties["CarryTargetID"];
+                this.handPositionOffset = new List<MVector3>();
+                this.handRotationOffset = new List<MQuaternion>();
+                if (bothHanded)
+                {
+                    this.handPositionOffset.Add(objectTransform.InverseTransformPoint(handTransform.Position));
+                    this.handRotationOffset.Add(objectTransform.InverseTransformRotation(handTransform.Rotation));
+                    this.handPositionOffset.Add(objectTransform.InverseTransformPoint(this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, MJointType.RightWrist)));
+                    this.handRotationOffset.Add(objectTransform.InverseTransformRotation(this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, MJointType.RightWrist)));
+                }
+                else
+                {
+                    this.handPositionOffset.Add(objectTransform.InverseTransformPoint(handTransform.Position));
+                    this.handRotationOffset.Add(objectTransform.InverseTransformRotation(handTransform.Rotation));
+                }   
+            }
             return new MBoolResponse(true);
         }
 
@@ -208,59 +244,124 @@ namespace CarryMMUSimple
 
             //Get the hand position and rotation of the last frame (approved result)
             this.SkeletonAccess.SetChannelData(simulationState.Initial);
-            MVector3 currentHandPosition = this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, this.handJoint);
-            MQuaternion currentHandRotation = this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, this.handJoint);
 
-
-            //Get the desired hand position (of the underlying motion e.g. idle)
-            this.SkeletonAccess.SetChannelData(simulationState.Current);
-            MVector3 targetHandPosition = this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, this.handJoint);
-            MQuaternion targetHandRotation = this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, this.handJoint);
-
-
-            //Add an offset on top of the position if desired
-            if(this.addOffset)
-                targetHandPosition = ComputeNewPositionWithOffset(targetHandPosition, simulationState.Current);
-
-            //Move the hand from the current position to the target position
-            MVector3 deltaPosition = targetHandPosition.Subtract(currentHandPosition);
-
-            //Compute the distance of the hand to the target hand position
-            float distanceToGoal = deltaPosition.Magnitude();
-
-
-            //Create positioning finished event if not already created and distance below threshold
-            if(distanceToGoal < this.positioningFinishedThreshold && !this.positioningFinished)
+            if (CarryTargetID != "")
             {
-                result.Events.Add(new MSimulationEvent("PositioningFinished", "PositioningFinished", this.instruction.ID));
-                this.positioningFinished = true;
+                MMICSharp.Logger.LogInfo("Carry Target mode");
+                var soct = this.SceneAccess.GetSceneObjectByID(CarryTargetID).Transform;
+                var currentT = this.SceneAccess.GetSceneObjectByID(this.objectTransform.ID).Transform;
+                var direction = soct.Position.Subtract(currentT.Position);
+                float distance = (direction).Magnitude();
+                if(distance > this.velocity * time)
+                {
+                    float perc = (this.velocity * (float)time) / distance;
+                    soct = new MTransform("tmptrans", currentT.Position.Lerp(soct.Position, perc), currentT.Rotation.Slerp(soct.Rotation, perc), MVector3Extensions.One());
+                } else
+                {
+                    if(!this.positioningFinished)
+                    {
+                        //Create positioning finished event if not already created and distance below threshold
+                        result.Events.Add(new MSimulationEvent("PositioningFinished", "PositioningFinished", this.instruction.ID));
+                        this.positioningFinished = true;
+                    }
+                    if(FinishWithGoal)
+                    {
+                        result.Events.Add(new MSimulationEvent("Carry ended", mmiConstants.MSimulationEvent_End, this.instruction.ID));
+                    }
+                }
+
+                MVector3 targetHandPosition = soct.TransformPoint(this.handPositionOffset[0]);
+                MQuaternion targetHandRotation = soct.TransformRotation(this.handRotationOffset[0]);
+
+                //Set the desired endeffector constraints
+                constraintManager.SetEndeffectorConstraint(this.handJoint, targetHandPosition, targetHandRotation);
+
+                if(this.handPositionOffset.Count > 1)
+                {
+                    MVector3 targetHandPosition2 = soct.TransformPoint(this.handPositionOffset[1]);
+                    MQuaternion targetHandRotation2 = soct.TransformRotation(this.handRotationOffset[1]);
+
+                    //Set the desired endeffector constraints
+                    constraintManager.SetEndeffectorConstraint(MJointType.RightWrist, targetHandPosition2, targetHandRotation2);
+                }
+
+
+                //Generate a new posture using the ik solver and the specified constraints               
+                MIKServiceResult ikResult = this.ServiceAccess.IKService.CalculateIKPosture(simulationState.Current, constraintManager.GetJointConstraints(), new Dictionary<string, string>());
+                result.Posture = ikResult.Posture;
+
+
+                //Compute the corresponding positon/rotation of the object and
+                //adjust the transformation of the object which should be moved
+                result.SceneManipulations.Add(new MSceneManipulation()
+                {
+                    Transforms = new List<MTransformManipulation>()
+                 {
+                      new MTransformManipulation()
+                      {
+                          Target = this.objectTransform.ID,
+                          //Compute the new global position of the object
+                           Position = soct.Position,
+                           //Compute the new global rotation of the object
+                           Rotation = soct.Rotation
+                        }
+                 }
+                });
             }
-
-            //Compute the current velocity based on the general max velocity and the velocity of the root motion
-            float currentVelocity = this.velocity + this.ComputeRootVelocity(time, simulationState);
-
-            //Compute the max distance which can be covered within the current frame
-            float maxDistance = (float)(time * currentVelocity);
-
-            //Compute the weight for slerping (weight increases with shrinking distance to target)
-            float weight = Math.Max(0, 1 - distanceToGoal);
-
-            //Create a new transform representing the next hand transform
-            MTransform newHandTransform = new MTransform("", currentHandPosition.Clone(), currentHandRotation.Clone(), new MVector3(1, 1, 1))
+            else
             {
-                //Compute the new hand position (normalize delta position and multiply by max distance)
-                Position = currentHandPosition.Add(deltaPosition.Normalize().Multiply(Math.Min(deltaPosition.Magnitude(), maxDistance))),
+                MVector3 currentHandPosition = this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, this.handJoint);
+                MQuaternion currentHandRotation = this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, this.handJoint);
 
-                //Just perform an interpolation to gather new hand rotation (weight is determined by the translation distance)
-                Rotation = MQuaternionExtensions.Slerp(currentHandRotation, targetHandRotation, weight)
-            };
+                //Get the desired hand position (of the underlying motion e.g. idle)
+                this.SkeletonAccess.SetChannelData(simulationState.Current);
+                MVector3 targetHandPosition = this.SkeletonAccess.GetGlobalJointPosition(this.AvatarDescription.AvatarID, this.handJoint);
+                MQuaternion targetHandRotation = this.SkeletonAccess.GetGlobalJointRotation(this.AvatarDescription.AvatarID, this.handJoint);
 
 
-            //Compute the corresponding positon/rotation of the object and
-            //adjust the transformation of the object which should be moved
-            result.SceneManipulations.Add(new MSceneManipulation()
-            {
-                Transforms = new List<MTransformManipulation>()
+                //Add an offset on top of the position if desired
+                if (this.addOffset)
+                    targetHandPosition = ComputeNewPositionWithOffset(targetHandPosition, simulationState.Current);
+
+                //Move the hand from the current position to the target position
+                MVector3 deltaPosition = targetHandPosition.Subtract(currentHandPosition);
+
+                //Compute the distance of the hand to the target hand position
+                float distanceToGoal = deltaPosition.Magnitude();
+
+
+                //Create positioning finished event if not already created and distance below threshold
+                if (distanceToGoal < this.positioningFinishedThreshold && !this.positioningFinished)
+                {
+                    result.Events.Add(new MSimulationEvent("PositioningFinished", "PositioningFinished", this.instruction.ID));
+                    this.positioningFinished = true;
+                }
+
+                //Compute the current velocity based on the general max velocity and the velocity of the root motion
+                float currentVelocity = this.velocity + this.ComputeRootVelocity(time, simulationState);
+
+                //Compute the max distance which can be covered within the current frame
+                float maxDistance = (float)(time * currentVelocity);
+
+                //Compute the weight for slerping (weight increases with shrinking distance to target)
+                float weight = Math.Max(0, 1 - distanceToGoal);
+
+                //Create a new transform representing the next hand transform
+                MTransform newHandTransform = new MTransform("", currentHandPosition.Clone(), currentHandRotation.Clone(), new MVector3(1, 1, 1))
+                {
+                    //Compute the new hand position (normalize delta position and multiply by max distance)
+                    Position = currentHandPosition.Add(deltaPosition.Normalize().Multiply(Math.Min(deltaPosition.Magnitude(), maxDistance))),
+
+                    //Just perform an interpolation to gather new hand rotation (weight is determined by the translation distance)
+                    Rotation = MQuaternionExtensions.Slerp(currentHandRotation, targetHandRotation, weight)
+                };
+
+
+                //Compute the corresponding positon/rotation of the object and
+                //adjust the transformation of the object which should be moved
+                result.SceneManipulations.Add(new MSceneManipulation()
+                {
+                    Transforms = new List<MTransformManipulation>()
                  {
                       new MTransformManipulation()
                       {
@@ -271,15 +372,18 @@ namespace CarryMMUSimple
                            Rotation = newHandTransform.TransformRotation(this.objectRotationOffset)
                         }
                  }
-            });
+                });
 
 
-            //Set the desired endeffector constraints
-            constraintManager.SetEndeffectorConstraint(this.handJoint, newHandTransform.Position, newHandTransform.Rotation);
+                //Set the desired endeffector constraints
+                constraintManager.SetEndeffectorConstraint(this.handJoint, newHandTransform.Position, newHandTransform.Rotation);
 
-            //Generate a new posture using the ik solver and the specified constraints               
-            MIKServiceResult ikResult = this.ServiceAccess.IKService.CalculateIKPosture(simulationState.Current, constraintManager.GetJointConstraints(), new  Dictionary<string, string>());
-            result.Posture = ikResult.Posture;
+                //Generate a new posture using the ik solver and the specified constraints               
+                MIKServiceResult ikResult = this.ServiceAccess.IKService.CalculateIKPosture(simulationState.Current, constraintManager.GetJointConstraints(), new Dictionary<string, string>());
+                result.Posture = ikResult.Posture;
+            }
+
+
 
             //Return the result
             return result;

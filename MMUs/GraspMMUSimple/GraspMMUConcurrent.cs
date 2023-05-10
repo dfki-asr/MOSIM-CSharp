@@ -1,18 +1,12 @@
-﻿// SPDX-License-Identifier: MIT
-// The content of this file has been developed in the context of the MOSIM research project.
-// Original author(s): Felix Gaisbauer, Janis Sprenger
-
-using CarryMMUSimple;
-using MMICSharp.Adapter;
+﻿using MMICSharp.Adapter;
 using MMICSharp.Common;
 using MMICSharp.Common.Attributes;
 using MMIStandard;
 using System;
 using System.Collections.Generic;
 
-namespace CarryMMUConcurrent
+namespace GraspMMUSimple
 {
-
     /// <summary>
     /// Class used for debugging the MMU
     /// </summary>
@@ -50,7 +44,7 @@ namespace CarryMMUConcurrent
             {
 
                 //Load the description from path -> Change this line for testing a different MMU
-                MMUDescription mmuDescription = MMICSharp.Common.Communication.Serialization.FromJsonString<MMUDescription>(System.IO.File.ReadAllText("../../../CarryMMUConcurrent/bin/Debug/description.json"));
+                MMUDescription mmuDescription = MMICSharp.Common.Communication.Serialization.FromJsonString<MMUDescription>(System.IO.File.ReadAllText("../../../GraspMMUSimple/bin/Debug/description.json"));
 
 
                 return new Dictionary<string, MMULoadingProperty>()
@@ -65,19 +59,19 @@ namespace CarryMMUConcurrent
             public IMotionModelUnitDev InstantiateMMU(MMULoadingProperty loadingProperty)
             {
                 //Instantiate the respective MMU -> Change this line for testing a different MMU
-                return new CarryMMUConcurrentImpl();
+                return new GraspMMUConcurrentImpl();
             }
         }
     }
 
 
-    [MMUDescriptionAttribute("Felix Gaisbauer", "1.0", "CarryMMUConcurrent", "Object/Carry", "carryConcurrent", "A carry MMU", "A single handed carry MMU.")]
-    public class CarryMMUConcurrentImpl:MMUBase
+    [MMUDescriptionAttribute("Janis Sprenger", "1.0", "GraspMMUConcurrent", "Pose/Grasp", "", "MMU allows to manipulate the finger joints by means of motion blending.", "MMU allows to manipulate the finger joints by means of motion blending.")]
+    public class GraspMMUConcurrentImpl : MMUBase
     {
         /// <summary>
         /// Respective instance for the left/right hand
         /// </summaryReachMMUImpl
-        private Dictionary<MInstruction, CarryMMUSimpleImpl> mmuInstances = new Dictionary<MInstruction, CarryMMUSimpleImpl>();
+        private Dictionary<MInstruction, GraspMMUSimpleImpl> mmuInstances = new Dictionary<MInstruction, GraspMMUSimpleImpl>();
 
         private List<MInstruction> instructions = new List<MInstruction>();
 
@@ -94,16 +88,17 @@ namespace CarryMMUConcurrent
         /// <param name="instruction"></param>
         /// <param name="simulationState"></param>
         /// <returns></returns>
-        [MParameterAttribute("TargetID", "ID", "The id of the object which should be carried", true)]
-        [MParameterAttribute("Hand", "{Left,Right}", "The hand of the carry motion", true)]
-        [MParameterAttribute("AddOffset", "bool", "Specifies whether an offset is automatically added to the carry position considering the object dimensions", false)]
-        [MParameterAttribute("CarryTargetID", "ID", "Specifies an optional carry target. If defined, this is used instead of the underlying posture as target.", false)]
-        [MParameterAttribute("PositioningFinishedThreshold", "float", "Threshold for the positioning finished event.", false)]
-        [MParameterAttribute("Velocity", "float", "Specifies the velocity of the reaching.", false)]
+
+        [MParameterAttribute("Hand", "Left/Right", "The hand type.", true)]
+        [MParameterAttribute("HandPose", "PostureConstraint", "The desired hand pose, joint constraints of the finger tips.", true)]
+        [MParameterAttribute("UseGlobalCoordinates", "bool", "Specified whether the global coordinates of the fingers are used for establishing the hand pose (by default true).", false)]
+
+        [MParameterAttribute("Duration", "float", "The desired duration until the pose is established.", false)]
+        [MParameterAttribute("KeepHandPose", "bool", "Specifies whether the MMU finishes once the hand pose is establish, or if the MMU continues actively holding the posture", false)]
         public override MBoolResponse AssignInstruction(MInstruction instruction, MSimulationState simulationState)
         {
             //To do -> Check whether the execution is allowed
-            CarryMMUSimpleImpl instance = new CarryMMUSimpleImpl
+            GraspMMUSimpleImpl instance = new GraspMMUSimpleImpl
             {
                 SceneAccess = this.SceneAccess,
                 ServiceAccess = this.ServiceAccess,
@@ -154,7 +149,7 @@ namespace CarryMMUConcurrent
                 result.SceneManipulations?.AddRange(localResult.SceneManipulations);
 
                 //Add the events
-                if(localResult.Events !=null && localResult.Events.Count >0)
+                if (localResult.Events != null && localResult.Events.Count > 0)
                     result.Events.AddRange(localResult.Events);
 
                 //Merge the drawing calls
@@ -176,16 +171,16 @@ namespace CarryMMUConcurrent
 
         public override MBoolResponse Abort(string instructionID = null)
         {
-            if(instructionID != null)
+            if (instructionID != null)
             {
                 MInstruction instruction = this.instructions.Find(S => S.ID == instructionID);
 
-                if(instruction != null)
+                if (instruction != null)
                 {
-                    if(mmuInstances.ContainsKey(instruction))
+                    if (mmuInstances.ContainsKey(instruction))
                         mmuInstances.Remove(instruction);
 
-                    if(instructions.Contains(instruction))
+                    if (instructions.Contains(instruction))
                         instructions.Remove(instruction);
                 }
             }

@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GraspMMUConcurrent.cs" />
     <Compile Include="HandContainer.cs" />
     <Compile Include="GraspMMUSimpleImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

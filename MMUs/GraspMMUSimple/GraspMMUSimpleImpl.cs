@@ -2,6 +2,7 @@
 // The content of this file has been developed in the context of the MOSIM research project.
 // Original author(s): Felix Gaisbauer
 
+using MMICSharp.Adapter;
 using MMICSharp.Common;
 using MMICSharp.Common.Attributes;
 using MMIStandard;
@@ -12,22 +13,7 @@ using System.Reflection;
 
 namespace GraspMMUSimple
 {
-    /// <summary>
-    /// Class used for debugging the MMU
-    /// </summary>
-    class Debug
-    {
-        static void Main(string[] args)
-        {
-            using (var debugAdapter = new DebugAdapter.DebugAdapter(typeof(GraspMMUSimpleImpl)))
-            {
-                Console.ReadLine();
-            }
-        }
-    }
-
-
-    [MMUDescriptionAttribute("Felix Gaisbauer", "1.0", "GraspMMUSimple", "Pose/Grasp", "", "MMU allows to manipulate the finger joints by means of motion blending.", "MMU allows to manipulate the finger joints by means of motion blending.")]
+    //[MMUDescriptionAttribute("Felix Gaisbauer", "1.0", "GraspMMUSimple", "Pose/Grasp", "", "MMU allows to manipulate the finger joints by means of motion blending.", "MMU allows to manipulate the finger joints by means of motion blending.")]
     public class GraspMMUSimpleImpl : MMUBase
     {
         private readonly List<HandContainer> ActiveHands = new List<HandContainer>();

@@ -136,6 +136,7 @@ namespace ReachMMUConcurrent
             {
                 Posture = simulationState.Current,
                 Events = new List<MSimulationEvent>(),
+                Constraints = simulationState.Constraints ?? new List<MConstraint>()
             };
 
             //Handle each active MMU (each instruction coressponds to one MMU)
@@ -149,7 +150,7 @@ namespace ReachMMUConcurrent
                 simulationState.Constraints = localResult.Constraints;
 
                 //Write the result
-                result.Constraints = localResult.Constraints;
+                result.Constraints.AddRange(localResult.Constraints);
                 result.Posture = localResult.Posture;
 
                 //Merge the scene manipulations

@@ -188,6 +188,13 @@ namespace ReachMMU
             //Compute the target transform at the beginning of each frame
             this.targetTransform = this.ComputeTargetTransform();
 
+            if (this.targetTransform == null)
+            {
+                MMICSharp.Logger.Log(MMICSharp.Log_level.L_ERROR, $"Could not find Scene Object {instruction.Properties["TargetID"]}");
+                result.LogData = new List<string>() { $"Error! Could not find Scene Object {instruction.Properties["TargetID"]}" };
+            }
+
+
             //The presently active constraints
             List<MConstraint> globalConstraints = result.Constraints;
 
@@ -230,8 +237,9 @@ namespace ReachMMU
 
             else
             {
-                //Compute the next pose
-                nextPose = this.DoLocalMotionPlanning(currentVelocity, this.angularVelocity, TimeSpan.FromSeconds(time), currentHandPosition, currentHandRotation, this.targetTransform.Position, this.targetTransform.Rotation);
+                if(this.targetTransform != null)
+                    //Compute the next pose
+                    nextPose = this.DoLocalMotionPlanning(currentVelocity, this.angularVelocity, TimeSpan.FromSeconds(time), currentHandPosition, currentHandRotation, this.targetTransform.Position, this.targetTransform.Rotation);
             }
 
 
@@ -510,6 +518,8 @@ namespace ReachMMU
                 ID = "target"
             };
 
+            var transforms = this.SceneAccess.GetTransforms();
+
             //Use the constraint (if defined)
             if (instruction.Constraints != null && instruction.Constraints.Exists(s => s.ID == instruction.Properties["TargetID"]))
             {
@@ -519,7 +529,6 @@ namespace ReachMMU
                 target.Position = match.GeometryConstraint.GetGlobalPosition(this.SceneAccess);
                 target.Rotation = match.GeometryConstraint.GetGlobalRotation(this.SceneAccess);
             }
-
             //Gather from the scene
             else
                 target = this.SceneAccess.GetTransformByID(instruction.Properties["TargetID"]);

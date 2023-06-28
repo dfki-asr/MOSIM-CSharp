@@ -181,6 +181,9 @@ echo Deploy MMUs
 	RMDIR /s/q %BUILDENV%\\MMUs\\MoveMMUSimple
 	RMDIR /s/q %BUILDENV%\\MMUs\\ReachMMU
 	RMDIR /s/q %BUILDENV%\\MMUs\\ReleaseMMU
+	RMDIR /s/q %BUILDENV%\\MMUs\\DebugAdapter
+	RMDIR /s/q %BUILDENV%\\MMUs\\MMUDescriptionAutoGenerator
+	RMDIR /s/q %BUILDENV%\\MMUs\\IKTestMMU
 exit /b 0
 	
 ::DeploySkeletonAccess

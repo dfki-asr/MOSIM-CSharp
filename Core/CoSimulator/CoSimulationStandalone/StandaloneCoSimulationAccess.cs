@@ -367,5 +367,35 @@ namespace MMICoSimulation
             Logger.LogError("GetCurrentEvents not implemented. Returning null. ");
             return new MCoSimulationEvents();
         }
+
+        public List<MConstraint> GetBoundaryConstraints(MInstruction instruction)
+        {
+            string avatarID = instruction.AvatarID;
+            this.CleanCosimulators(avatarID);
+            for (int i = 0; i < this.cosimMMUs.Count; i++)
+            {
+                if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
+                {
+                    return this.accesses[i].GetBoundaryConstraints(instruction);
+                }
+            }
+            Logger.LogError($"No cosimulator found for avatar id {avatarID}");
+            throw new ArgumentException($"Cosimulator for Avatar with ID {avatarID} not found!");
+        }
+
+        public MBoolResponse CheckPrerequisites(MInstruction instruction)
+        {
+            string avatarID = instruction.AvatarID;
+            this.CleanCosimulators(avatarID);
+            for (int i = 0; i < this.cosimMMUs.Count; i++)
+            {
+                if (this.cosimMMUs[i].GetDescription() != null && this.cosimMMUs[i].GetDescription().AvatarID == avatarID)
+                {
+                    return this.accesses[i].CheckPrerequisites(instruction);
+                }
+            }
+            Logger.LogError($"No cosimulator found for avatar id {avatarID}");
+            throw new ArgumentException($"Cosimulator for Avatar with ID {avatarID} not found!");
+        }
     }
 }

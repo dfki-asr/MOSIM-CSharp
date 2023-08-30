@@ -8,6 +8,7 @@ using MMIStandard;
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using MMICSharp;
 
 namespace MMILauncher.Console
@@ -22,23 +23,41 @@ namespace MMILauncher.Console
         static void Main(string[] args)
         {
             char separator = Path.AltDirectorySeparatorChar;
+			
+			System.Console.WriteLine ( "Starting Console Launcher ... " );
             
             Logger.Instance.Level = Log_level.L_DEBUG;
             //
+			
+			Logger.Log(Log_level.L_DEBUG, "Start gegistering Server ... ");
+			
             registerService = new MMIRegisterServiceImplementation();
+			
+			Logger.Log(Log_level.L_DEBUG, "Register Server ... ");
 
             registerService.OnAdapterRegistered += RegisterService_OnAdapterRegistered;
+
+            //Setup the environment
+            SetupEnvironment($"..{separator}Adapters", $".:{separator}MMUs", $"..{separator}Services");
+			
+			Logger.Log(Log_level.L_DEBUG, "Starting Server ... ");
 
             ///Start the register server
             registerServer = new MMIRegisterThriftServer(RuntimeData.MMIRegisterAddress.Port, registerService);
             registerServer.Start();
+			
+			Logger.Log(Log_level.L_DEBUG, "Server started ... " );
 
-            //Setup the environment
-            SetupEnvironment($"..{separator}Adapters", $".:{separator}MMUs", $"..{separator}Services");
+            while (true) {
+                // Logger.Log(Log_level.L_DEBUG, "Sleeping ... ");
+                Thread.Sleep(1000);
+            };
 
-            System.Console.ReadLine();
+            // System.Console.ReadLine();
 
-            Dispose();
+            // Logger.Log(Log_level.L_DEBUG, "Server terminated ... ");
+
+            // Dispose();
         }
 
 

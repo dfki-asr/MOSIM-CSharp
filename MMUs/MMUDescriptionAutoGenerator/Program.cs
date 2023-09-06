@@ -45,6 +45,7 @@ namespace MMUDescriptionAutoGenerator
                 catch (Exception e)
                 {
                     Console.WriteLine($"Problem saving file, {e.Message}");
+                    throw (e);
                 }
 
                 Console.WriteLine($"Description file successfully stored at {outputPath}");
@@ -54,6 +55,7 @@ namespace MMUDescriptionAutoGenerator
             catch (Exception e)
             {
                 Console.WriteLine("Failed at automatically generating the description file. Exception occured: " + e.Message + e.StackTrace);
+                throw (e);
             }
         }
 

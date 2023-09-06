@@ -44,7 +44,7 @@ namespace MMUDescriptionAutoGenerator
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Problem saving file");
+                    Console.WriteLine($"Problem saving file, {e.Message}");
                 }
 
                 Console.WriteLine($"Description file successfully stored at {outputPath}");

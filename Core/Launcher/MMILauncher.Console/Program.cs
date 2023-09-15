@@ -205,7 +205,7 @@ namespace MMILauncher.Console
                   {
                       // Set port number.
 					  
-					  port = Convert.ToInt32 ( v );
+					  RuntimeData.MMIRegisterAddress.Port = Convert.ToInt32 ( v );
 
                   }
                 },

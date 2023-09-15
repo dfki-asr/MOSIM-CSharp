@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using MMICSharp.Adapter;
 using MMICSharp;
 
 namespace MMILauncher.Console
@@ -186,6 +187,43 @@ namespace MMILauncher.Console
             RuntimeData.MMUDescriptions.Clear();
             RuntimeData.ServiceInstances.Clear();
             RuntimeData.SessionIds.Clear();
+        }
+
+        /// <summary>
+        /// Tries to parse the command line arguments
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private static bool ParseCommandLineArguments(string[] args)
+        {
+
+            //Parse the command line arguments
+            OptionSet p = new OptionSet()
+            {
+                { "p|port=", "The port on which the Launcher should listen.",
+                  v =>
+                  {
+                      // Set port number.
+					  
+					  port = Convert.ToInt32 ( v );
+
+                  }
+                },
+
+            };
+
+            try
+            {
+                p.Parse(args);
+                return true;
+            }
+            catch (Exception)
+            {
+                System.Console.WriteLine("Cannot parse arguments");
+            }
+
+            return false;
+
         }
     }
 }

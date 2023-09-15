@@ -26,7 +26,9 @@ namespace MMILauncher.Console
             char separator = Path.AltDirectorySeparatorChar;
 			
 			System.Console.WriteLine ( "Starting Console Launcher ... " );
-            
+
+            ParseCommandLineArguments(args);
+
             Logger.Instance.Level = Log_level.L_DEBUG;
             //
 			

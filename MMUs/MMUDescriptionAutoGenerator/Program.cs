@@ -5,6 +5,7 @@
 using MMICSharp.Common.Attributes;
 using MMIStandard;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,8 +23,10 @@ namespace MMUDescriptionAutoGenerator
             {
                 //Get the desired path
                 string path = args[0];
+				
+				char separator = Path.AltDirectorySeparatorChar;
 
-                string outputPath = System.IO.Path.GetDirectoryName(path) + @"\description.json";
+                string outputPath = System.IO.Path.GetDirectoryName(path) + $"{separator}description.json";
 
                 Console.WriteLine($"Loading .dll from filepath: {path}");
 
@@ -41,7 +44,8 @@ namespace MMUDescriptionAutoGenerator
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Problem saving file");
+                    Console.WriteLine($"Problem saving file, {e.Message}");
+                    throw (e);
                 }
 
                 Console.WriteLine($"Description file successfully stored at {outputPath}");
@@ -51,6 +55,7 @@ namespace MMUDescriptionAutoGenerator
             catch (Exception e)
             {
                 Console.WriteLine("Failed at automatically generating the description file. Exception occured: " + e.Message + e.StackTrace);
+                throw (e);
             }
         }
 

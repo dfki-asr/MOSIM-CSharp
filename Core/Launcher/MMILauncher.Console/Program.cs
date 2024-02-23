@@ -31,7 +31,32 @@ namespace MMILauncher.Console
 
             ///Start the register server
             registerServer = new MMIRegisterThriftServer(RuntimeData.MMIRegisterAddress.Port, registerService);
-            registerServer.Start();
+
+            bool started = false;
+            while(!started)
+            {
+                try
+                {
+                    registerServer.Start();
+                    started = true;
+                }
+                catch (System.Threading.ThreadAbortException e)
+                {
+                    Logger.Log(Log_level.L_DEBUG, $"Thread could not be started: {e.Message}");
+                    started = false;
+                    System.Threading.Thread.Sleep(100);
+                } catch(Exception e)
+                {
+                    Logger.Log(Log_level.L_DEBUG, $"Thread could not be started, unkown exception: {e.Message}");
+                    started = false;
+                    System.Threading.Thread.Sleep(100);
+                }
+            }
+
+            while (true) {
+                // Logger.Log(Log_level.L_DEBUG, "Sleeping ... ");
+                Thread.Sleep(1000);
+            };
 
             //Setup the environment
             SetupEnvironment($"..{separator}Adapters", $".:{separator}MMUs", $"..{separator}Services");

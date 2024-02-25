@@ -7,6 +7,7 @@ using MMIStandard;
 using MMICSharp.Common;
 using MMICSharp.Adapter;
 using MMICSharp;
+using MMICSharp.Services;
 
 namespace RetargetingServiceServer
 {
@@ -37,18 +38,6 @@ namespace RetargetingServiceServer
             //Register for unhandled exceptions in the application
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
-
-
-            //Console.WriteLine(@"   ______  __ __     ___       __            __           ");
-            //Console.WriteLine(@"  / ____/_/ // /_   /   | ____/ /___ _____  / /____  _____");
-            //Console.WriteLine(@" / /   /_  _  __/  / /| |/ __  / __ `/ __ \/ __/ _ \/ ___/");
-            //Console.WriteLine(@"/ /___/_  _  __/  / ___ / /_/ / /_/ / /_/ / /_/  __/ /    ");
-            //Console.WriteLine(@"\____/ /_//_/    /_/  |_\__,_/\__,_/ .___/\__/\___/_/     ");
-            //Console.WriteLine(@"                                  /_/                     ");
-            //Console.WriteLine(@"_________________________________________________________________");
-
-
-
             //Parse the command line arguments
             if (!ParseCommandLineArguments(args))
             {
@@ -69,67 +58,12 @@ namespace RetargetingServiceServer
 
             Console.WriteLine("Retargeting Service");
             string sessionID = Guid.NewGuid().ToString();
-            //ServiceAccess serviceAccess = new ServiceAccess(new MIPAddress("127.0.0.1", 9009), sessionID);
-            ServiceAccess serviceAccess = new ServiceAccess(mmiRegisterAddress, sessionID);
-            var reg = serviceAccess.RegisterService;
-            try
-            {
-                //int servicePort = 8886;
-                RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(addressInt.Address, addressInt.Port);
-                var server = new MMIRetargetingThriftServer(addressInt.Port, handler);
-                Console.WriteLine("Register the service");
-                MServiceDescription desc = handler.ServiceDescription;
-                
-                // setting remote address
-                desc.Addresses[0].Address = address.Address;
-                desc.Addresses[0].Port = address.Port;
-
-                reg.RegisterService(desc);
-
-                Console.WriteLine("Starting the server...");
-                server.Start();
-            }
-            catch (Exception x)
-            {
-                Console.WriteLine(x.StackTrace);
-            }
-            Console.WriteLine("done.");
+            RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(addressInt.Address, addressInt.Port);
 
 
-
-            //Create the adapter description -> To do load from file in future
-            //MAdapterDescription adapterDescription = new MAdapterDescription()
-            //{
-            //    Name = "CSharpAdapter",
-            //    Addresses = new List<MIPAddress>() { address },
-            //    ID = "438543643-436436435-2354235",
-            //    Language = "C#",
-            //    Parameters = new List<MParameter>(),
-            //    Properties = new Dictionary<string, string>()
-            //};
-
-
-            ////Create a session cleaner for the utilized session data
-            //sessionCleaner = new SessionCleaner(sessionData)
-            //{
-            //    //Session shoould be cleaned after 60 minutes
-            //    Timeout = TimeSpan.FromMinutes(60),
-
-            //    //The session cleaner should check every minute
-            //    UpdateTime = TimeSpan.FromMinutes(1)
-            //};
-
-            ////Start the session cleaner
-            //sessionCleaner.Start();
-
-            //Create a new adapter controller which scans the filesystem and checks for MMUs there
-            //using (AdapterController adapterController = new AdapterController(sessionData, adapterDescription, mmiRegisterAddress, new FileBasedMMUProvider(sessionData, new List<string>() { mmuPath }, new List<string>() { "C#", "C++CLR" }), new CSharpMMUInstantiator()))
-            //{
-            //    //Start the adapter controller
-            //    adapterController.Start();
-
-            //    Console.ReadLine();
-            //}
+            ServiceController controller = new MMICSharp.Services.ServiceController(handler.GetDescription(), mmiRegisterAddress, new MRetargetingService.Processor(handler), addressInt);
+            controller.Start();
+            Console.ReadLine();
         }
 
         /// <summary>

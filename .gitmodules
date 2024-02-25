@@ -1,4 +1,4 @@
 [submodule "Core/MMICSharp-Core"]
 	path = Core/MMICSharp-Core/MMICSharp-Core
 	url = ../MMICSharp-Core.git
-	branch = master
+	branch = develop

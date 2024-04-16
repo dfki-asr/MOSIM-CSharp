@@ -58,7 +58,7 @@ namespace RetargetingServiceServer
 
             Console.WriteLine("Retargeting Service");
             string sessionID = Guid.NewGuid().ToString();
-            RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(addressInt.Address, addressInt.Port);
+            RetargetingInterfaceWrapper handler = new RetargetingInterfaceWrapper(address.Address, address.Port);
 
 
             ServiceController controller = new MMICSharp.Services.ServiceController(handler.GetDescription(), mmiRegisterAddress, new MRetargetingService.Processor(handler), addressInt);
